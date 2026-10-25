@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='catalog/library.js') }}"></script>
+<script>
+	$(function () {
+		catalogLibrary({
+			admin: {{ 'true' if admin else 'false' }},
+			base: window.pikaraokeConfig.basePath,
+			labels: {
+				all: {{ _('All')|tojson }},
+				byTitle: {{ _('Title A-Z')|tojson }},
+				byArtist: {{ _('Artist A-Z')|tojson }},
+				recent: {{ _('Recently added')|tojson }},
+				songs: {{ _('songs')|tojson }},
+				noSongs: {{ _('No songs match.')|tojson }},
+				noArtists: {{ _('No artists match.')|tojson }},
+				tryAnother: {{ _('Try another name or clear the filters.')|tojson }},
+				emptyLibrary: {{ _('The library is empty.')|tojson }},
+				emptyLibraryHint: {{ _('Search for a song or upload one: it turns into karaoke on its own.')|tojson }},
+				original: {{ _('Original')|tojson }},
+				processing: {{ _('Processing')|tojson }},
+				ready: {{ _('Karaoke ready')|tojson }},
+				no_vocals: {{ _('No vocals')|tojson }},
+				error: {{ _('Error')|tojson }},
+				review: {{ _('Check metadata')|tojson }},
+				state: {{ _('Status')|tojson }},
+				language: {{ _('Language')|tojson }},
+				genre: {{ _('Genre')|tojson }},
+				decade: {{ _('Decade')|tojson }},
+				sort: {{ _('Sort')|tojson }},
+				addToQueue: {{ _('Add to queue')|tojson }},
+				edit: {{ _('Fix metadata')|tojson }},
+				rename: {{ _('Rename artist')|tojson }},
+				renamePrompt: {{ _('New name for the artist')|tojson }},
+				merge: {{ _('Merge into another artist')|tojson }},
+				mergeInto: {{ _('Merge into')|tojson }},
+				uploading: {{ _('Uploading')|tojson }},
+				uploaded: {{ _('Uploaded; it will be turned into karaoke')|tojson }},
+				organizing: {{ _('Organising the library')|tojson }},
+				organized: {{ _('Library organised')|tojson }},
+				searching: {{ _('Searching...')|tojson }},
+				realLyrics: {{ _('Real lyrics')|tojson }},
+				lyricsQueued: {{ _('Looking for the published lyrics...')|tojson }},
+				noMatches: {{ _('No matches found')|tojson }},
+			},
+		});
+	});
+</script>
+<style>
+	.library-row { display: flex; gap: 0.75rem; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--bulma-border-weak); }
+	.library-cover { width: 48px; height: 48px; flex: none; border-radius: 8px; object-fit: cover; background: var(--bulma-scheme-main-ter); display: grid; place-items: center; }
+	.library-body { flex: 1; min-width: 0; }
+	.library-title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.library-sub { font-size: 0.85rem; color: var(--bulma-text-weak); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.library-actions { display: flex; gap: 0.6rem; align-items: center; font-size: 1.25rem; }
+	.library-filters .select, .library-filters select { width: 100%; }
+	.suggestion { cursor: pointer; }
+</style>
+{% endblock %}
+
+{% block heading_action %}
+{% if admin %}
+<div class="buttons mb-0">
+	<label class="button is-small is-primary mb-0">
+		<input id="library-upload" type="file" accept="audio/*,video/*" hidden />
+		{# MSG: Button that uploads a song file from the phone into the library. #}
+		{% trans %}Upload song{% endtrans %}
+	</label>
+	{# MSG: Button that looks up artist, title and year for every song in the library. #}
+	<button id="library-organize" class="button is-small mb-0">{% trans %}Organise library{% endtrans %}</button>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<p id="library-status" class="has-text-info mb-3" hidden></p>
+
+<div class="tabs is-boxed mb-3">
+	<ul>
+		{# MSG: Library tab listing songs. #}
+		<li class="is-active" data-tab="songs"><a>{% trans %}Songs{% endtrans %}</a></li>
+		{# MSG: Library tab listing artists. #}
+		<li data-tab="artists"><a>{% trans %}Artists{% endtrans %}</a></li>
+	</ul>
+</div>
+
+<div id="tab-songs">
+	<div class="field has-addons mb-2">
+		<div class="control is-expanded">
+			<input id="song-search" class="input" type="search" placeholder="{{ _('Search by song or artist') }}" aria-label="{{ _('Search by song or artist') }}" />
+		</div>
+	</div>
+	<div id="artist-filter" class="tags has-addons mb-2 is-hidden">
+		<span class="tag is-link is-light" id="artist-filter-name"></span>
+		<a class="tag is-delete" id="artist-filter-clear"></a>
+	</div>
+	<div class="columns is-mobile is-multiline is-variable is-1 library-filters mb-1">
+		<div class="column is-half-mobile"><div class="select is-small is-fullwidth"><select id="filter-state"></select></div></div>
+		<div class="column is-half-mobile"><div class="select is-small is-fullwidth"><select id="filter-language"></select></div></div>
+		<div class="column is-half-mobile"><div class="select is-small is-fullwidth"><select id="filter-genre"></select></div></div>
+		<div class="column is-half-mobile"><div class="select is-small is-fullwidth"><select id="filter-decade"></select></div></div>
+		<div class="column is-full-mobile"><div class="select is-small is-fullwidth"><select id="filter-sort"></select></div></div>
+	</div>
+	<p id="song-count" class="is-size-7 has-text-grey mb-1"></p>
+	<div id="song-list"></div>
+	{# MSG: Link from the library to PiKaraoke's file and folder browser. #}
+	<p class="mt-4 is-size-7"><a class="library-browse" href="{{ url_for('files.browse') }}">{% trans %}Browse files and folders{% endtrans %}</a></p>
+</div>
+
+<div id="tab-artists" hidden>
+	<input id="artist-search" class="input mb-3" type="search" placeholder="{{ _('Search artists') }}" aria-label="{{ _('Search artists') }}" />
+	<div id="artist-list"></div>
+</div>
+
+<div id="meta-modal" class="modal">
+	<div class="modal-background"></div>
+	<div class="modal-card">
+		<header class="modal-card-head">
+			{# MSG: Title of the dialog to correct a song's artist, title, year and genre. #}
+			<p class="modal-card-title">{% trans %}Fix metadata{% endtrans %}</p>
+			<button class="delete meta-close" aria-label="close"></button>
+		</header>
+		<section class="modal-card-body">
+			<div class="field"><label class="label">{% trans %}Artist{% endtrans %}</label><input id="meta-artist" class="input" /></div>
+			<div class="field"><label class="label">{% trans %}Title{% endtrans %}</label><input id="meta-title" class="input" /></div>
+			<div class="columns is-mobile">
+				<div class="column"><label class="label">{% trans %}Year{% endtrans %}</label><input id="meta-year" class="input" inputmode="numeric" /></div>
+				<div class="column"><label class="label">{% trans %}Genre{% endtrans %}</label><input id="meta-genre" class="input" /></div>
+			</div>
+			<div class="field has-addons">
+				<div class="control is-expanded"><input id="meta-query" class="input" /></div>
+				{# MSG: Button that searches iTunes for the right artist and title. #}
+				<div class="control"><button id="meta-search" class="button">{% trans %}Search{% endtrans %}</button></div>
+			</div>
+			<div id="meta-suggestions"></div>
+			{# MSG: Button that fetches the song's published lyrics again and re-times them. #}
+			<button id="meta-refresh-lyrics" class="button is-small mt-3" hidden>{% trans %}Look for the real lyrics again{% endtrans %}</button>
+		</section>
+		<footer class="modal-card-foot buttons">
+			<button id="meta-save" class="button is-primary">{% trans %}Save{% endtrans %}</button>
+			<button class="button meta-close">{% trans %}Cancel{% endtrans %}</button>
+		</footer>
+	</div>
+</div>
+
+<div id="merge-modal" class="modal">
+	<div class="modal-background"></div>
+	<div class="modal-card">
+		<header class="modal-card-head">
+			<p class="modal-card-title" id="merge-title"></p>
+			<button class="delete merge-close" aria-label="close"></button>
+		</header>
+		<section class="modal-card-body">
+			<div class="select is-fullwidth"><select id="merge-target"></select></div>
+		</section>
+		<footer class="modal-card-foot buttons">
+			{# MSG: Button that merges two spellings of an artist into one. #}
+			<button id="merge-save" class="button is-primary">{% trans %}Merge{% endtrans %}</button>
+			<button class="button merge-close">{% trans %}Cancel{% endtrans %}</button>
+		</footer>
+	</div>
+</div>
+{% endblock %}

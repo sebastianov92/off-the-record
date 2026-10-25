@@ -289,6 +289,11 @@ class PlayHistoryManager:
             self._session_cached = True
         return self._cached_session
 
+    @property
+    def current_play_id(self) -> int | None:
+        """The plays row of the performance under way, for attaching its score."""
+        return self._current_play_id
+
     def get_current_session_name(self) -> str | None:
         """Return the open session's name, or None when it is unnamed or absent.
 

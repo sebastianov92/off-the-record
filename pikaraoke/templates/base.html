@@ -12,10 +12,13 @@
   <script src="{{  url_for('static', filename='js.cookie-3.0.5.min.js') }}"></script>
   <script src="{{  url_for('static', filename='socket.io-4.8.3.min.js') }}"></script>
   <script src="{{  url_for('static', filename='spa-navigation.js') }}"></script>
+  <script src="{{  url_for('static', filename='ai/avatars.js') }}"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;700&display=swap">
   <link rel="stylesheet" href="{{  url_for('static', filename='bulma.min.css') }}">
   <link rel="stylesheet" href="{{  url_for('static', filename='custom.css') }}">
-  <link rel="icon" type="image/png" href="{{  url_for('static', filename='images/microphone.png') }}">
+  <link rel="stylesheet" href="{{  url_for('static', filename='skin.css') }}">
+  <link rel="icon" type="image/svg+xml" href="{{  url_for('static', filename='brand/isologo.svg') }}">
+  <link rel="apple-touch-icon" href="{{  url_for('static', filename='brand/app-icon.png') }}">
   <link rel="stylesheet" href="{{  url_for('static', filename='fontello/css/fontello.css') }}?v=4">
 
   <script>
@@ -174,6 +177,25 @@
       });
       return d;
     }
+
+    // A first visit asks for the singer's name before anything else: the queue, the
+    // rankings and the avatar on the TV all go by it. The TV screen has no dialog.
+    function requireName() {
+      if (getUserCookie() || !$("#text-prompt-modal").length) {
+        return;
+      }
+      window.promptForIdentity({
+        title: window.translations.identityTitle,
+        label: window.translations.usernameLabel,
+        help: window.translations.usernameHelp,
+        value: "",
+        required: true
+      }).done(function (res) {
+        Cookies.set("user", res.name, { expires: 3650, path: window.pikaraokeConfig.cookiePath });
+        window.setCurrentUser(res.name);
+      });
+    }
+    $(requireName);
 
     // KJ mode is opt-in for a host queuing on behalf of singers. It is not the
     // default use case (a karaoke party between friends), so its extra search-UI
@@ -455,13 +477,13 @@
   <div class="container" style="padding: 5px; max-width: 900px;">
     <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
       <div class="navbar-brand ml-0" id="brand">
-        <a id="home" class="navbar-item" href="{{ url_for('home.home') }}">
+        <a id="home" class="navbar-item" href="{{ url_for('home.home') }}" aria-label="{% trans %}Home{% endtrans %}">
           <i class="icon icon-home-2" title="Home"></i>
           {# MSG: Navigation link for the home page. #}
           <span>{% trans %}Home{% endtrans %}</span>
         </a>
 
-        <a id="queue" class="navbar-item" href="{{ url_for('queue.queue') }}">
+        <a id="queue" class="navbar-item" href="{{ url_for('queue.queue') }}" aria-label="{% trans %}Queue{% endtrans %}">
           <i class="icon icon-list-numbered" title="Queue"></i>
           {# MSG: Navigation link for the queue page. #}
           <span>{% trans %}Queue{% endtrans %}</span>
@@ -470,7 +492,7 @@
              signal a phone gets and the aria-label is the only accessible name.
              Do not change these ids or hrefs: updateNavHighlight() derives the
              active item from the first URL path segment. -->
-        <a id="browse" class="navbar-item" href="{{ url_for('files.browse') }}"
+        <a id="library" class="navbar-item" href="{{ url_for('catalog.library') }}"
           aria-label="{% trans %}Songs{% endtrans %}">
           <i class="icon icon-music"></i>
           {# MSG: Navigation link for the page listing songs already on this machine. #}
@@ -512,29 +534,55 @@
             {# MSG: Menu link to the most-played songs and most active singers. #}
             <span>{% trans %}Rankings{% endtrans %}</span>
           </a>
+          {# Conversions, the play log, sessions and settings are the host's:
+             a guest does not even see them. #}
+          {% if is_admin() %}
+          <a id="processing" class="navbar-item" href="{{ url_for('ai.processing') }}">
+            <i class="icon icon-cog"></i>
+            {# MSG: Menu link to the page showing songs being turned into karaoke. #}
+            <span>{% trans %}Conversions{% endtrans %}</span>
+          </a>
           <a id="history" class="navbar-item" href="{{ url_for('sessions.history') }}">
             <i class="icon icon-list-alt"></i>
             {# MSG: Menu link to the log of everything that has been sung. #}
             <span>{% trans %}Play History{% endtrans %}</span>
           </a>
-          {% if is_admin() %}
           <a id="sessions" class="navbar-item" href="{{ url_for('sessions.sessions') }}">
             <i class="icon icon-mic-1"></i>
             {# MSG: Menu link to the karaoke session management page, only shown to the host. #}
             <span>{% trans %}Sessions{% endtrans %}</span>
           </a>
-          {% endif %}
           <a id="settings" class="navbar-item" href="{{ url_for('settings.settings') }}">
             <i class="icon icon-cog"></i>
             {# MSG: Menu link to the settings and host controls page. #}
             <span>{% trans %}Settings{% endtrans %}</span>
           </a>
+          {% endif %}
           <hr class="navbar-divider">
           <a id="info" class="navbar-item" href="{{ url_for('info.info') }}">
             <i class="icon icon-info-circled-1"></i>
             {# MSG: Menu link to the page with the QR code to join and the system information. #}
             <span>{% trans %}Info{% endtrans %}</span>
           </a>
+          {# The host's login. With no password set everyone is the host, so
+             there is nothing to log into or out of. #}
+          {% if has_admin_password() %}
+          {% if is_admin() %}
+          <form action="{{ url_for('admin.logout') }}" method="post">
+            <button id="admin-logout" class="navbar-item" type="submit">
+              <i class="icon icon-user-circle"></i>
+              {# MSG: Button which logs the user out of admin mode. #}
+              <span>{% trans %}Log out{% endtrans %}</span>
+            </button>
+          </form>
+          {% else %}
+          <a id="admin-login" class="navbar-item" href="#" role="button" aria-haspopup="dialog">
+            <i class="icon icon-user-circle-o"></i>
+            {# MSG: Title of the admin section. #}
+            <span>{% trans %}Admin{% endtrans %}</span>
+          </a>
+          {% endif %}
+          {% endif %}
         </div>
       </div>
     </nav>
@@ -576,6 +624,10 @@
       {% endblock %}
     </div>
 
+    {% if has_admin_password() and not is_admin() %}
+    {% include 'partials/admin_login.html' %}
+    {% endif %}
+
     {# Reusable text-prompt dialog, kept outside .box so SPA navigation (which
        swaps only .box) cannot destroy it. Driven by promptForText(). #}
     <div class="modal" id="text-prompt-modal">
@@ -601,6 +653,11 @@
         </footer>
       </div>
     </div>
+
+    {% if is_admin() %}
+    {% include 'partials/mini_player.html' %}
+    <script src="{{ url_for('static', filename='ai/miniplayer.js') }}"></script>
+    {% endif %}
   </div>
   {% endif %}
 

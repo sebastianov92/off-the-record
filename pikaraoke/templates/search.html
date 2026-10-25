@@ -285,10 +285,9 @@
 		// "Include non-karaoke matches" is the only setting left on this page, so its
 		// cookie is read and written right here rather than through a restore-everything
 		// helper.
+		// Originals are the default: the AI worker turns them into karaoke.
 		const includeNonKaraoke = Cookies.get("include-non-karaoke");
-		if (includeNonKaraoke !== undefined) {
-			$("#include-non-karaoke").prop("checked", includeNonKaraoke === "true");
-		}
+		$("#include-non-karaoke").prop("checked", includeNonKaraoke !== "false");
 		$("#include-non-karaoke").change(function () {
 			Cookies.set("include-non-karaoke", $(this).is(":checked"), {
 				expires: 365,
@@ -309,6 +308,10 @@
 						song_title: songTitle || "",
 						song_added_by: name,
 						queue: addToQueue,
+						// An original keeps only its sound for the AI worker; a karaoke
+						// video keeps its picture, which already carries the lyrics.
+						audio_only: $("#include-non-karaoke").is(":checked") &&
+							!/karaoke|instrumental/i.test(songTitle || ""),
 					}),
 					success: function () { onSettled(true); },
 					error: function () { onSettled(false); },
@@ -508,6 +511,7 @@
 					autocomplete="off"
 					{# MSG: Placeholder in the box used to search YouTube for a song to download. #}
 					placeholder="{{ _('Search YouTube by title, artist...') }}"
+					aria-label="{{ _('Search YouTube by title, artist...') }}"
 				/>
 				<span class="icon is-small is-left"><i class="icon icon-search-1"></i></span>
 			</div>

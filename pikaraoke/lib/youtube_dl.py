@@ -181,6 +181,7 @@ def build_ytdl_download_command(
     high_quality: bool = False,
     youtubedl_proxy: str | None = None,
     additional_args: str | None = None,
+    audio_only: bool = False,
 ) -> list[str]:
     """Build the yt-dlp command line for downloading a video.
 
@@ -190,6 +191,8 @@ def build_ytdl_download_command(
         high_quality: If True, cap the download at 1080p; otherwise cap it at 720p.
         youtubedl_proxy: Optional proxy server URL.
         additional_args: Optional additional command-line arguments as a string.
+        audio_only: Keep only the sound, as m4a: an original song the AI worker
+            turns into karaoke needs no picture, and skipping it saves space.
 
     Returns:
         List of command-line arguments for subprocess execution.
@@ -211,6 +214,8 @@ def build_ytdl_download_command(
         f"/best[ext!=webm][height<={height}][acodec!=none]"
         "/best[ext!=webm][acodec!=none]"
     )
+    if audio_only:
+        file_quality = "bestaudio[ext=m4a]/bestaudio"
     args = [
         "-f",
         file_quality,
@@ -232,6 +237,8 @@ def build_ytdl_download_command(
         "--compat-options",
         "filename-sanitization",
     ]
+    if audio_only:
+        args += ["-x", "--audio-format", "m4a"]
     cmd = ytdlp_command() + args + _js_runtime_args()
     if youtubedl_proxy:
         cmd += ["--proxy", youtubedl_proxy]

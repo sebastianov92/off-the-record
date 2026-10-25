@@ -103,7 +103,7 @@ class TestScorePhrasesEndpoint:
 
 
 class TestHidingTheUrlAndQrCode:
-    """The URL and the QR code hide separately, in the corner and the screensaver."""
+    """The URL and the QR code in the corner hide separately (the screensaver shows neither)."""
 
     @pytest.fixture
     def app(self):
@@ -122,9 +122,9 @@ class TestHidingTheUrlAndQrCode:
         return ["display: none" in tag for tag in tags]
 
     def test_hiding_the_url_leaves_the_qr_code(self, client):
-        assert self._hidden(client, "splash-url", hide_url=True) == [True, True]
-        assert self._hidden(client, "splash-qr-image", hide_url=True) == [False, False]
+        assert self._hidden(client, "splash-url", hide_url=True) == [True]
+        assert self._hidden(client, "splash-qr-image", hide_url=True) == [False]
 
     def test_hiding_the_qr_code_leaves_the_url(self, client):
-        assert self._hidden(client, "splash-qr-image", hide_qr_code=True) == [True, True]
-        assert self._hidden(client, "splash-url", hide_qr_code=True) == [False, False]
+        assert self._hidden(client, "splash-qr-image", hide_qr_code=True) == [True]
+        assert self._hidden(client, "splash-url", hide_qr_code=True) == [False]

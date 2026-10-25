@@ -6,6 +6,7 @@ import socket
 import subprocess
 import threading
 import time
+from collections.abc import Callable
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -72,7 +73,7 @@ class Karaoke:
     qr_code_path: str | None = None
     base_path: str = os.path.dirname(__file__)
     loop_interval: int = 500  # in milliseconds
-    default_logo_path: str = os.path.join(base_path, "static", "images", "logo.png")
+    default_logo_path: str = os.path.join(base_path, "static", "brand", "logo-white.svg")
     default_bg_music_path: str = os.path.join(base_path, "static", "music")
     default_bg_video_path: str = os.path.join(base_path, "static", "video", "night_sea.mp4")
     screensaver_timeout: int
@@ -219,6 +220,8 @@ class Karaoke:
         self.bg_video_path = self.default_bg_video_path if bg_video_path is None else bg_video_path
         self.streaming_format = streaming_format
         self.socketio = socketio
+        # Set by the AI service: stems and lyrics for the song on screen, if it has them.
+        self.now_playing_ai: Callable[[str | None, int], dict | None] | None = None
         self.url_override = url
         self.url_base_path = url_base_path
         self.url = self.get_url()
@@ -655,6 +658,14 @@ class Karaoke:
             # too. The KJ singer field gates on this, and session_changed emits
             # this payload, so starting a session elsewhere updates it live.
             "has_session": self.play_history.has_active_session(),
+            "now_playing_ai": (
+                self.now_playing_ai(
+                    self.playback_controller.now_playing_filename,
+                    self.playback_controller.now_playing_transpose,
+                )
+                if self.now_playing_ai
+                else None
+            ),
         }
 
     def _relay_to_browser(self, event: str) -> None:
@@ -708,7 +719,7 @@ class Karaoke:
                 # autoplay off, the head of the queue waits for a manual start.
                 autoplay = self.preferences.get_or_default("autoplay")
                 if (
-                    len(self.queue_manager.queue) > 0
+                    self.queue_manager.next_ready_index() is not None
                     and not self.playback_controller.is_playing
                     and (autoplay or self.playback_controller.start_requested)
                 ):

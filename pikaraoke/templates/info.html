@@ -66,10 +66,13 @@
 		</header>
 		<div class="card-content">
 			<div class="content">
+				<img class="about-logo" src="{{ url_for('static', filename='brand/logo-white.svg') }}" alt="Off the Record">
 				{# MSG: Version line on the About card. {version} is the release number, e.g. 1.23.0. #}
-				<p class="mb-2">{{ _('PiKaraoke version {version}').replace('{version}', pikaraoke_version) }}</p>
-				{# MSG: Link to the PiKaraoke project on GitHub, where anyone can find and install it. #}
-				<p class="mb-0"><a href="https://github.com/vicwomg/pikaraoke" target="_blank" rel="noopener">{% trans %}Find PiKaraoke on GitHub{% endtrans %}</a></p>
+				<p class="mb-2">{{ _('Off the Record version {version}').replace('{version}', pikaraoke_version) }}</p>
+				{# MSG: Says this app is built on PiKaraoke, the open-source project it was forked from. #}
+				<p class="mb-0">{% trans %}Off the Record is a fork of PiKaraoke.{% endtrans %}
+				{# MSG: Link to the PiKaraoke project on GitHub. #}
+				<a href="https://github.com/vicwomg/pikaraoke" target="_blank" rel="noopener">{% trans %}PiKaraoke on GitHub{% endtrans %}</a></p>
 			</div>
 		</div>
 	</div>
@@ -94,7 +97,7 @@
 					{# MSG: The version of the program "ffmpeg". #}
 					<li><u>{% trans %}FFmpeg version:{% endtrans %}</u> {{ ffmpeg_version }} {% if not is_transpose_enabled %} (missing lib-rubberband, pitch shift is not supported) {% endif %}</li>
 					{# MSG: The version of Pikaraoke running right now. #}
-					<li><u>{% trans %}Pikaraoke version:{% endtrans %}</u> {{ pikaraoke_version }}</li>
+					<li><u>{% trans %}Off the Record version:{% endtrans %}</u> {{ pikaraoke_version }}</li>
 					</ul>
 					{# MSG: Button that copies the system info above it, for pasting into a bug report. #}
 					<button id="copy-system-info" class="button is-small is-primary">{% trans %}Copy{% endtrans %}</button>

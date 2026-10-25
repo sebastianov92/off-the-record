@@ -1,0 +1,76 @@
+# Off the Record on the mini PC. CasaOS: App Store > Custom Install > Import,
+# paste this file. Plain Docker: docker compose -f off-the-record.casaos.yml up -d
+name: off-the-record
+
+services:
+  off-the-record:
+    image: ghcr.io/sebastianov92/off-the-record:latest
+    container_name: off-the-record
+    # The address the QR code and the TV show; the container cannot see the
+    # mini PC's own LAN address from inside Docker's bridge network.
+    command: ["-u", "http://192.168.18.2:5555"]
+    environment:
+      TZ: America/Guayaquil
+    volumes:
+      - type: bind
+        source: /DATA/AppData/off-the-record/songs
+        target: /app/pikaraoke-songs
+      # Settings, the database, the AI's stems and lyrics, and the models (~2 GB).
+      - type: bind
+        source: /DATA/AppData/off-the-record/data
+        target: /home/pikaraoke/.pikaraoke
+    ports:
+      - target: 5555
+        published: "5555"
+        protocol: tcp
+    restart: unless-stopped
+    network_mode: bridge
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    x-casaos:
+      envs:
+        - container: TZ
+          description:
+            en_us: Time zone
+            es_es: Zona horaria
+      ports:
+        - container: "5555"
+          description:
+            en_us: Web interface and TV screen (/splash)
+            es_es: Interfaz web y pantalla de la tele (/splash)
+      volumes:
+        - container: /app/pikaraoke-songs
+          description:
+            en_us: Songs
+            es_es: Canciones
+        - container: /home/pikaraoke/.pikaraoke
+          description:
+            en_us: Settings, database, AI files and models
+            es_es: Ajustes, base de datos, archivos de la IA y modelos
+
+x-casaos:
+  architectures:
+    - amd64
+  main: off-the-record
+  author: Dezik Labs
+  developer: Dezik Labs
+  category: Entertainment
+  icon: https://raw.githubusercontent.com/sebastianov92/pikaraoke/karaoke-ai/pikaraoke/static/brand/app-icon.png
+  index: /
+  port_map: "5555"
+  scheme: http
+  title:
+    en_us: Off the Record
+  tagline:
+    en_us: Karaoke with AI vocal removal and word-timed lyrics
+    es_es: Karaoke que quita la voz y muestra la letra palabra por palabra
+  description:
+    en_us: >-
+      A fork of PiKaraoke. Search YouTube from your phone, queue songs, and sing on the TV:
+      the singer's voice is removed, the lyrics fill word by word, and the microphone gives a real score.
+    es_es: >-
+      Un fork de PiKaraoke. Busca en YouTube desde el celular, arma la cola y canta en la tele:
+      se quita la voz del cantante, la letra se rellena palabra por palabra y el micrófono da un puntaje real.

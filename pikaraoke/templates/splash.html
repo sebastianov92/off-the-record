@@ -118,6 +118,8 @@
 </div>
 
 <div id="score" style="display: none">
+	<img class="score-logo" src="{{ url_for('images.logo') }}" alt="logo"
+		{% if hide_logo %}style="display: none"{% endif %} />
 	<div id="your-score-text">
     {# MSG: The title of the score screen, telling the user their singing score #}
 		{% trans %}Your Score{% endtrans %}
@@ -125,6 +127,10 @@
 	<div id="score-number-text">
 	</div>
 	<div id="score-review-text">
+	</div>
+	{# MSG: Parts of a real singing score: how in tune, how many entries on time, how much was sung. #}
+	<div id="score-breakdown" class="stroke is-size-4"
+		data-pitch="{{ _('Pitch') }}" data-timing="{{ _('Entries') }}" data-presence="{{ _('Sung') }}">
 	</div>
 	<canvas id="fireworks"></canvas>
 </div>
@@ -135,7 +141,7 @@
     <p>
       {# MSG: Prompt for interaction in order to enable video autoplay. #} {%
       trans %}Due to limitations with browser permissions, you must interact
-      with the page once before it allows autoplay of videos. Pikaraoke will not
+      with the page once before it allows autoplay of videos. Off the Record will not
       play otherwise. Click the button below to
       <a onClick="handleConfirmation()">confirm</a>.{% endtrans %}
     </p>
@@ -180,15 +186,9 @@
 <div id="splash-notification"></div>
 
 <div class="fw-fh-container">
-  <div id="screensaver" style="visibility: hidden; --pikaraoke-logo-url: url('{{ url_for("images.logo") }}');">
-    <div id="dvd">
-      <div id="screensaver-qr">
-        <div class="splash-qr-image" style="text-align: right{% if hide_qr_code %}; display: none{% endif %}">
-          <img src="{{ url_for('images.qrcode') }}" width="60px" />
-        </div>
-        <div class="splash-url"{% if hide_url %} style="display: none"{% endif %}>{{ hostap_info[0] }}<br />{{ url }}</div>
-      </div>
-    </div>
+  {# The screensaver is the isologo alone, drifting over the dark. #}
+  <div id="screensaver" style="visibility: hidden; --pikaraoke-logo-url: url('{{ url_for('static', filename='brand/isologo.svg') }}');">
+    <div id="dvd" role="img" aria-label="Off the Record"></div>
   </div>
 </div>
 
@@ -207,6 +207,12 @@
 <script src="{{  url_for('static', filename='screensaver.js') }}"></script>
 <script src="{{  url_for('static', filename='fireworks.js') }}"></script>
 <script src="{{  url_for('static', filename='score.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='ai/stage.css') }}" />
+<script src="{{  url_for('static', filename='ai/backgrounds.js') }}"></script>
+<script src="{{  url_for('static', filename='ai/lyrics.js') }}"></script>
+<script src="{{  url_for('static', filename='ai/scoring.js') }}"></script>
+<script src="{{  url_for('static', filename='ai/score.js') }}"></script>
+<script src="{{  url_for('static', filename='ai/splash.js') }}"></script>
 
 <style>
   /* The TV screen keeps master's colours: Bulma's own green and amber, on pure black.

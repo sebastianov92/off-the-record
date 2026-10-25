@@ -141,12 +141,16 @@ class FileResolver:
     file_extension: str | None = None
     ass_file_path: str | None = None
 
-    def __init__(self, file_path: str, streaming_format: str = "hls") -> None:
+    def __init__(
+        self, file_path: str, streaming_format: str = "hls", audio_override: str | None = None
+    ) -> None:
         """Initialize the FileResolver with a media file path.
 
         Args:
             file_path: Path to the media file to resolve.
             streaming_format: Video streaming format ('hls' or 'mp4').
+            audio_override: Audio file played instead of the song, with no video
+                (the instrumental the AI worker separated).
         """
         create_tmp_dir()
         self.tmp_dir = get_tmp_dir()
@@ -155,7 +159,8 @@ class FileResolver:
         # Include timestamp to ensure unique stream UIDs for repeated plays
         unique_string = f"{file_path}_{time.time()}"
         self.stream_uid = string_to_hash(unique_string)
-        self.process_file(file_path)
+        self.audio_only = audio_override is not None
+        self.process_file(audio_override or file_path)
         self.streaming_format = streaming_format
 
         # Set output file extension based on streaming format
@@ -290,6 +295,9 @@ class FileResolver:
             self.handle_mp3_cdg(file_path)
         else:
             self.file_path = file_path
+            # Originals downloaded for the AI worker carry sound only.
+            if file_extension == ".m4a":
+                self.audio_only = True
             # If there is an aegissub subtitle file found, set the path to it
             self.handle_aegissub_subtile(file_path)
         if not self.file_path:

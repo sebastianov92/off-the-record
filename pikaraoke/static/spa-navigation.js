@@ -74,8 +74,8 @@
     };
 
     // Reusable clickable text-prompt over #text-prompt-modal. Resolves a
-    // $.Deferred with the trimmed input on save, rejects on cancel/Escape/
-    // background. $.Deferred not a Promise: cancel is normal, and a rejected
+    // $.Deferred with the trimmed input on save, rejects on cancel/Escape/background
+    // (never, for opts.required). $.Deferred not a Promise: cancel is normal, and a rejected
     // Promise with no .catch() logs on every dismissal.
     window.promptForText = function (opts) {
         opts = opts || {};
@@ -93,6 +93,9 @@
         $('#text-prompt-label').text(opts.label || '').toggleClass('is-hidden', !opts.label);
         $('#text-prompt-help').text(opts.help || '').toggleClass('is-hidden', !opts.help);
         $input.val(opts.value || '').attr('placeholder', opts.placeholder || '');
+        // A required prompt (the name asked on a first visit) has no way out but Save.
+        const required = !!opts.required;
+        $modal.find('.text-prompt-cancel').toggleClass('is-hidden', required);
 
         // Namespaced so a prior, unclosed prompt leaves no handler behind.
         function teardown() {
@@ -110,6 +113,9 @@
             d.resolve(value);
         }
         function dismiss() {
+            if (required) {
+                return;
+            }
             teardown();
             d.reject();
         }

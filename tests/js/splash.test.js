@@ -178,6 +178,9 @@ describe("start_song emission", () => {
 });
 
 describe("endSong", () => {
+  // A score the microphone scorer (ai/score.js) would hand over.
+  const MEASURED = { total: 87, pitch: 0.9, presence: 0.95, timing: 0.8 };
+
   it("emits end_song with the id current when the song ended", async () => {
     state().isMaster = true;
     state().currentPlaybackId = "PB1";
@@ -203,11 +206,30 @@ describe("endSong", () => {
   });
 
   it("shows the score screen when asked and the preference allows it", async () => {
-    state().isMaster = true;
-    state().currentPlaybackId = "PB1";
+    window.aiScore = { finish: async () => MEASURED, reset: () => {} };
+    try {
+      state().isMaster = true;
+      state().currentPlaybackId = "PB1";
 
-    await splash.endSong("complete", true);
-    expect(startScoreCalls).toEqual(["/static/"]);
+      await splash.endSong("complete", true);
+      expect(startScoreCalls).toEqual(["/static/"]);
+    } finally {
+      delete window.aiScore;
+    }
+  });
+
+  it("skips the score screen when nothing was measured", async () => {
+    // No microphone, no AI melody or nobody singing: no made-up number.
+    window.aiScore = { finish: async () => null, reset: () => {} };
+    try {
+      state().isMaster = true;
+      state().currentPlaybackId = "PB1";
+
+      await splash.endSong("complete", true);
+      expect(startScoreCalls).toEqual([]);
+    } finally {
+      delete window.aiScore;
+    }
   });
 
   it("skips the score screen when the preference disables it", async () => {
@@ -236,6 +258,7 @@ describe("endSong", () => {
   it("does not tear down a song that loaded during the score screen", async () => {
     // A second song that starts while the score screen is up has already
     // loaded itself into the player; tearing down now would go black.
+    window.aiScore = { finish: async () => MEASURED, reset: () => {} };
     const realStartScore = globalThis.startScore;
     globalThis.startScore = async () => {
       state().currentPlaybackId = "PB2";
@@ -255,6 +278,7 @@ describe("endSong", () => {
       ]);
     } finally {
       globalThis.startScore = realStartScore;
+      delete window.aiScore;
     }
   });
 

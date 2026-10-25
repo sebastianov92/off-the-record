@@ -29,6 +29,10 @@ class DownloadBody(Schema):
     queue = fields.Boolean(
         load_default=False, metadata={"description": "Whether to queue the song after download"}
     )
+    audio_only = fields.Boolean(
+        load_default=False,
+        metadata={"description": "Keep only the sound, for the AI worker to make karaoke from"},
+    )
 
     @validates_schema
     def check_name(self, data, **kwargs):
@@ -61,6 +65,6 @@ def download(form):
     queue = form.get("queue", False)
 
     # Queue the download (processed serially by the download worker)
-    k.download_manager.queue_download(song, queue, user, title)
+    k.download_manager.queue_download(song, queue, user, title, form.get("audio_only", False))
 
     return jsonify({"status": "ok"})

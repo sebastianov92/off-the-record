@@ -99,6 +99,9 @@ class TestITunesProvider:
             "year": "1975",
             "genre": "Rock",
             "source": "itunes",
+            "artist_id": None,
+            "album": "",
+            "artwork": "",
         }
 
     @patch("pikaraoke.lib.metadata_providers.requests.get")

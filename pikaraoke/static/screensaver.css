@@ -18,16 +18,11 @@ body {
   position: absolute;
   left: 0px;
   top: 0px;
-  height: 200px;
-  width: 420px;
+  height: 28vh;
+  width: 28vh;
   z-index: 11;
-  border-radius: 10px;
-  display: flex;
-  justify-content: right;
-  align-items: flex-end;
-  padding: 10px;
   background-image: var(--pikaraoke-logo-url);
   background-repeat: no-repeat;
-  background-size: 300px;
-  background-position: contain;
+  background-size: contain;
+  background-position: center;
 }

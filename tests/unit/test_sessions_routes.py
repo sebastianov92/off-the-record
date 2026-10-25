@@ -108,26 +108,31 @@ class TestAdminGate:
         assert json.loads(response.data)["singers"][0]["performer"] == "Alice"
 
 
-class TestPublicPlayLog:
-    """The play log is the one part of this feature the whole room may read: a
-    guest looking up what they sang last time and queuing it again is the point
-    of the page. Everything around it stays with the host."""
+class TestHostOnlyPlayLog:
+    """The play log is the host's, like the rest of this feature; the rankings
+    are the part the whole room may read."""
 
-    def test_guests_can_read_the_log(self, client, karaoke):
+    def test_the_host_can_read_the_log(self, admin_client, karaoke):
         karaoke.play_history.get_plays.return_value = [{"id": 1, "song": "A Song"}]
         karaoke.play_history.count_plays.return_value = 1
 
-        response = client.get("/api/history/plays")
+        response = admin_client.get("/api/history/plays")
 
         assert response.status_code == 200
         assert json.loads(response.data)["plays"][0]["song"] == "A Song"
 
-    @pytest.mark.parametrize("path", ["/history", "/rankings"])
-    def test_guests_can_open_the_reporting_pages(self, client, karaoke_page, path):
+    def test_guests_cannot_read_the_log(self, client, karaoke):
+        assert client.get("/api/history/plays").status_code == 403
+        karaoke.play_history.get_plays.assert_not_called()
+
+    def test_guests_are_sent_away_from_the_log_page(self, client, karaoke_page):
+        assert client.get("/history").status_code == 302
+
+    def test_guests_can_open_the_rankings(self, client, karaoke_page):
         karaoke_page.play_history.get_sessions.return_value = []
 
         with patch("pikaraoke.routes.sessions.render_template", return_value="ok"):
-            assert client.get(path).status_code == 200
+            assert client.get("/rankings").status_code == 200
 
     def test_guests_cannot_delete_an_entry(self, client, karaoke):
         response = client.delete("/api/history/plays/1")
@@ -135,65 +140,62 @@ class TestPublicPlayLog:
         assert response.status_code == 403
         karaoke.play_history.delete_play.assert_not_called()
 
-    def test_the_page_says_whether_deleting_is_offered(self, admin_client, client, karaoke_page):
-        """The menu only shows Delete to the host; the API refuses it either way."""
+    def test_the_page_offers_deleting_to_the_host(self, admin_client, karaoke_page):
+        """The menu shows Delete to the host; the API refuses it to anyone else."""
         karaoke_page.play_history.get_sessions.return_value = []
 
         with patch("pikaraoke.routes.sessions.render_template", return_value="ok") as render:
             admin_client.get("/history")
             assert render.call_args.kwargs["admin"] is True
 
-            client.get("/history")
-            assert render.call_args.kwargs["admin"] is False
-
-    def test_the_page_carries_the_session_filter(self, client, karaoke_page):
+    def test_the_page_carries_the_session_filter(self, admin_client, karaoke_page):
         """The filter is a link, so the uuid arrives in the query string."""
         karaoke_page.play_history.get_sessions.return_value = [{"uuid": "abc", "name": "Fri"}]
 
         with patch("pikaraoke.routes.sessions.render_template", return_value="ok") as render:
-            client.get("/history?session=abc")
+            admin_client.get("/history?session=abc")
 
         assert render.call_args.kwargs["selected_session"] == "abc"
         assert render.call_args.kwargs["sessions"][0]["name"] == "Fri"
 
-    def test_the_page_carries_the_performer_filter(self, client, karaoke_page):
+    def test_the_page_carries_the_performer_filter(self, admin_client, karaoke_page):
         """Reached from a name on the rankings or in a session's singer list."""
         karaoke_page.play_history.get_sessions.return_value = []
 
         with patch("pikaraoke.routes.sessions.render_template", return_value="ok") as render:
-            client.get("/history?performer=Alice")
+            admin_client.get("/history?performer=Alice")
 
         assert render.call_args.kwargs["selected_performer"] == "Alice"
 
-    def test_the_log_filters_by_performer(self, client, karaoke):
+    def test_the_log_filters_by_performer(self, admin_client, karaoke):
         """The rows and the count take the same filter, or the pager offers a
         page the log cannot fill."""
         karaoke.play_history.get_plays.return_value = []
         karaoke.play_history.count_plays.return_value = 0
 
-        assert client.get("/api/history/plays?performer=Alice").status_code == 200
+        assert admin_client.get("/api/history/plays?performer=Alice").status_code == 200
 
         assert karaoke.play_history.get_plays.call_args.kwargs["performer"] == "Alice"
         assert karaoke.play_history.count_plays.call_args.kwargs["performer"] == "Alice"
 
-    def test_the_log_filters_by_song(self, client, karaoke):
+    def test_the_log_filters_by_song(self, admin_client, karaoke):
         """The id rides along with the title and is what decides the match, so a
         log opened from a chart row holds the plays that row counted."""
         karaoke.play_history.get_plays.return_value = []
         karaoke.play_history.count_plays.return_value = 0
 
-        response = client.get("/api/history/plays?song=A+Song&youtube_id=dQw4w9WgXcQ")
+        response = admin_client.get("/api/history/plays?song=A+Song&youtube_id=dQw4w9WgXcQ")
 
         assert response.status_code == 200
         for call in (karaoke.play_history.get_plays, karaoke.play_history.count_plays):
             assert call.call_args.kwargs["song"] == "A Song"
             assert call.call_args.kwargs["youtube_id"] == "dQw4w9WgXcQ"
 
-    def test_the_page_carries_the_song_filter(self, client, karaoke_page):
+    def test_the_page_carries_the_song_filter(self, admin_client, karaoke_page):
         karaoke_page.play_history.get_sessions.return_value = []
 
         with patch("pikaraoke.routes.sessions.render_template", return_value="ok") as render:
-            client.get("/history?song=A+Song&youtube_id=dQw4w9WgXcQ")
+            admin_client.get("/history?song=A+Song&youtube_id=dQw4w9WgXcQ")
 
         assert render.call_args.kwargs["selected_song"] == "A Song"
         assert render.call_args.kwargs["selected_youtube_id"] == "dQw4w9WgXcQ"

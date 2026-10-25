@@ -12,13 +12,6 @@ function getScoreData(scoreValue) {
   }
 }
 
-function getScoreValue() {
-  const random = Math.random();
-  const bias = 2; // adjust this value to control the bias
-  const scoreValue = Math.pow(random, 1 / bias) * 99;
-  return Math.floor(scoreValue);
-}
-
 async function showFinalScoreWithAudio(
   scoreTextElement,
   scoreValue,
@@ -61,7 +54,8 @@ async function rotateScore(scoreTextElement, duration) {
   }
 }
 
-async function startScore(staticPath) {
+// score: {total, pitch, presence, timing} measured from the microphone (ai/score.js).
+async function startScore(staticPath, score) {
   try {
     const r = await fetch(PikaraokeConfig.scorePhrasesUrl);
     scoreReviews = await r.json();
@@ -73,8 +67,15 @@ async function startScore(staticPath) {
   const scoreTextElement = $("#score-number-text");
   const scoreReviewElement = $("#score-review-text");
 
-  const scoreValue = getScoreValue();
+  const scoreValue = score.total;
   const scoreData = getScoreData(scoreValue);
+  const breakdown = $("#score-breakdown");
+  const percent = (fraction) => `${Math.round(fraction * 100)}%`;
+  breakdown.text(
+    `${breakdown.data("pitch")} ${percent(score.pitch)} · ` +
+      `${breakdown.data("timing")} ${percent(score.timing)} · ` +
+      `${breakdown.data("presence")} ${percent(score.presence)}`
+  );
 
   const drums = new Audio(staticPath + "sounds/score-drums.mp3");
   // Pre-create applause audio NOW to capture the user activation window
@@ -95,5 +96,6 @@ async function startScore(staticPath) {
     applause
   );
   scoreReviewElement.text("");
+  breakdown.text("");
   scoreElement.hide();
 }

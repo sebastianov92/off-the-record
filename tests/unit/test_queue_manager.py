@@ -474,6 +474,29 @@ class TestQueueManagerPopNext:
         assert song["semitones"] == 5
         assert song["title"] == "test"
 
+    def test_song_being_prepared_lets_the_next_ready_one_play_first(self, queue_manager):
+        """A song still having its vocals removed keeps its place; the next ready one plays."""
+        queue_manager.enqueue("/songs/busy---abc.mp4", "User1")
+        queue_manager.enqueue("/songs/ready---def.mp4", "User2")
+        queue_manager.is_ready = lambda path: "busy" not in path
+        notes = []
+        queue_manager._events.on("notification", lambda msg, _cls: notes.append(msg))
+
+        song = queue_manager.pop_next()
+
+        assert song["file"] == "/songs/ready---def.mp4"
+        assert [item["file"] for item in queue_manager.queue] == ["/songs/busy---abc.mp4"]
+        assert len(notes) == 1
+
+    def test_nothing_ready_pops_nothing(self, queue_manager):
+        """With every queued song still being prepared, the queue waits intact."""
+        queue_manager.enqueue("/songs/busy---abc.mp4", "User1")
+        queue_manager.is_ready = lambda _path: False
+
+        assert queue_manager.next_ready_index() is None
+        assert queue_manager.pop_next() is None
+        assert len(queue_manager.queue) == 1
+
 
 class TestQueueManagerSetSongSemitones:
     """Test pre-setting a queued song's key."""

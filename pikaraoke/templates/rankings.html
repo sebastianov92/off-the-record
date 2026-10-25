@@ -16,6 +16,24 @@
 
 	// The add links need no handler here: base.html delegates add-song-link
 	// clicks from the document, and a second binding would queue the song twice.
+
+	// Real scores come from the AI scorer's own table, filtered to the same session.
+	$(function () {
+		var session = {{ selected_session | tojson }};
+		$.getJSON(window.pikaraokeConfig.basePath + "/api/ai/scores", session ? { session: session } : {}, function (rows) {
+			var body = $("#ai-scores tbody").empty();
+			rows.forEach(function (row, i) {
+				var tr = $("<tr>");
+				tr.append($("<td>").text(i + 1));
+				tr.append($("<td>").append($("<span>").text(row.song_title), $("<br>"),
+					$("<small class='has-text-grey'>").text(row.performer)));
+				tr.append($("<td class='has-text-right has-text-weight-bold'>").text(row.score));
+				body.append(tr);
+			});
+			$("#ai-scores").toggleClass("is-hidden", !rows.length);
+			$("#ai-scores-empty").toggleClass("is-hidden", !!rows.length);
+		});
+	});
 </script>
 {% endblock %}
 
@@ -84,6 +102,19 @@
 
 {% include 'partials/session_filter.html' %}
 
+{# MSG: Heading for the list of the highest singing scores measured with a microphone. #}
+<h2>{% trans %}Best scores{% endtrans %}</h2>
+<table id="ai-scores" class="table is-striped rankings-table mb-0 is-hidden">
+	<colgroup>
+		<col class="col-rank" />
+		<col />
+		<col class="col-count" />
+	</colgroup>
+	<tbody></tbody>
+</table>
+{# MSG: Shown on the rankings page before anyone has sung with a microphone. #}
+<p id="ai-scores-empty">{% trans %}No scores yet: they appear when someone sings with a microphone.{% endtrans %}</p>
+
 {# MSG: Heading for the list of songs that have been sung the most times. #}
 <h2>{% trans %}Top songs{% endtrans %}</h2>
 {% if top_songs %}
@@ -117,9 +148,11 @@
 				   goes with the title because a song downloaded twice ranks as two
 				   rows: without it both would open the same combined log, agreeing
 				   with neither count. #}
+				{% if is_admin() %}
 				<a href="{{ url_for('sessions.history', song=song.song,
 					youtube_id=song.youtube_id or None,
 					session=selected_session or None) }}">{{ song.song }}</a>
+				{% else %}{{ song.song }}{% endif %}
 			</td>
 			<td class="has-text-right">{{ song.play_count }}</td>
 		</tr>
@@ -150,7 +183,9 @@
 			{# Through to this person's plays. The session goes with it, so a chart
 			   scoped to one night links to that night rather than to all time. #}
 			<td>
+				{% if is_admin() %}
 				<a href="{{ url_for('sessions.history', performer=performer.performer, session=selected_session or None) }}">{{ performer.performer }}</a>
+				{% else %}{{ performer.performer }}{% endif %}
 			</td>
 			<td class="has-text-right">{{ performer.play_count }}</td>
 		</tr>

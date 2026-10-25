@@ -25,6 +25,6 @@ def qrcode():
 @images_bp.route("/logo")
 @public
 def logo():
-    """Get the PiKaraoke logo image."""
+    """The splash screen's logo; its type follows the file (the default is an SVG)."""
     k = get_karaoke_instance()
-    return send_file(os.path.abspath(k.logo_path), mimetype="image/png")
+    return send_file(os.path.abspath(k.logo_path))

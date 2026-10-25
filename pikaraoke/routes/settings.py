@@ -22,7 +22,6 @@ settings_bp = Blueprint("settings", __name__)
 
 
 @settings_bp.route("/settings")
-@public
 def settings():
     """Preferences and host controls. Public so a locked-out guest can log in."""
     k = get_karaoke_instance()

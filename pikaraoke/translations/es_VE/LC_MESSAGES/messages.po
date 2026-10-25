@@ -174,8 +174,8 @@ msgstr "No tienes el permiso para actualizar yt-dlp"
 
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
-msgstr "Salir del pikaraoke ya!"
+msgid "Exiting Off the Record now!"
+msgstr "¡Cerrando Off the Record!"
 
 #. Message shown after trying to quit pikaraoke without admin permissions.
 #: routes/admin.py:109
@@ -557,8 +557,8 @@ msgstr "Canción"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - Historial de reproducción"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - Historial de reproducción"
 
 #: routes/splash.py:24
 msgid "Never sing again... ever."
@@ -1139,9 +1139,9 @@ msgstr "Acceso"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
 msgstr ""
-"¿Lo olvidaste? Reinicie PiKaraoke con --admin-password para configurar una "
+"¿Lo olvidaste? Reinicie Off the Record con --admin-password para configurar una "
 "nueva."
 
 # auto-translated
@@ -1349,8 +1349,8 @@ msgstr "En Linux/Raspberry Pi, instálelo con:"
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "y reinicie PiKaraoke."
+msgid "and restart Off the Record."
+msgstr "y reinicie Off the Record."
 
 # auto-translated
 #. Title text for the Score Phrases section of preferences
@@ -1534,8 +1534,8 @@ msgstr "Mantener el servidor despierto: no es compatible con esta plataforma."
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "Mantenga el servidor despierto mientras PiKaraoke se está ejecutando"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Mantenga el servidor despierto mientras Off the Record se está ejecutando"
 
 #. Text for the link where the user can clear all user preferences
 #: templates/info.html:744
@@ -1574,8 +1574,8 @@ msgstr "FFmpeg versión:"
 
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
-msgstr "Pikaraoke versión:"
+msgid "Off the Record version:"
+msgstr "Versión de Off the Record:"
 
 #. Header of the information section about the System stats.
 #: templates/info.html:777
@@ -1639,10 +1639,10 @@ msgstr "Actualizar yt-dlp"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "Este enlace de actualización anterior puede fallar si no tiene los permisos de archivo adecuados.\n"
-"    Consulte el registro de pikaraoke en busca de errores."
+"    Consulte el registro de Off the Record en busca de errores."
 
 #. Title of the updates section.
 #: templates/info.html:827
@@ -1659,11 +1659,11 @@ msgstr "Expandir el sistema de archivos Raspberry Pi"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
-"Si acaba de instalar la imagen pikaraoke prediseñada y su tarjeta SD tiene más de 4 GB,\n"
+"Si acaba de instalar una imagen prediseñada de Raspberry Pi y su tarjeta SD tiene más de 4 GB,\n"
 "    es posible que desee ampliar el sistema de archivos para utilizar el espacio restante. Sólo necesitas hacer esto una vez.\n"
 "    Esto reiniciará el sistema."
 
@@ -1723,8 +1723,8 @@ msgstr ""
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
-msgstr "Salir del pikaraoke"
+msgid "Quit Off the Record"
+msgstr "Cerrar Off the Record"
 
 #. Text for button which reboots the machine running Pikaraoke.
 #: templates/info.html:911
@@ -2277,12 +2277,12 @@ msgstr "Tu puntuación"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""
 "Debido a limitaciones con los permisos del navegador, debes interactuar\n"
-"      con la página una vez para que se active la reproducción automática de videos. De lo contrario, Pikaraoke\n"
+"      con la página una vez para que se active la reproducción automática de videos. De lo contrario, Off the Record\n"
 "      no reproducirá. Haz clic en el botón de abajo para\n"
 "      <a onClick=\"handleConfirmation()\">confirmar</a> ."
 
@@ -2290,3 +2290,307 @@ msgstr ""
 #: templates/splash.html:150
 msgid "Confirm"
 msgstr "Confirmar"
+
+# PiKaraoke fork: AI karaoke and organised library
+msgid "All"
+msgstr "Todos"
+
+msgid "Title A-Z"
+msgstr "Título A-Z"
+
+msgid "Artist A-Z"
+msgstr "Artista A-Z"
+
+msgid "Recently added"
+msgstr "Agregadas recientemente"
+
+msgid "songs"
+msgstr "canciones"
+
+msgid "No songs match."
+msgstr "Ninguna canción coincide."
+
+msgid "No artists match."
+msgstr "Ningún artista coincide."
+
+msgid "Original"
+msgstr "Original"
+
+msgid "Processing"
+msgstr "Procesando"
+
+msgid "Karaoke ready"
+msgstr "Karaoke listo"
+
+msgid "No vocals"
+msgstr "Sin voz"
+
+msgid "Check metadata"
+msgstr "Revisar datos"
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Genre"
+msgstr "Género"
+
+msgid "Decade"
+msgstr "Década"
+
+msgid "Sort"
+msgstr "Orden"
+
+msgid "Fix metadata"
+msgstr "Corregir datos"
+
+msgid "Rename artist"
+msgstr "Renombrar artista"
+
+msgid "New name for the artist"
+msgstr "Nuevo nombre del artista"
+
+msgid "Merge into another artist"
+msgstr "Unir con otro artista"
+
+msgid "Merge into"
+msgstr "Unir con"
+
+msgid "Uploading"
+msgstr "Subiendo"
+
+msgid "Uploaded; it will be turned into karaoke"
+msgstr "Subida; se convertirá en karaoke"
+
+msgid "Organising the library"
+msgstr "Ordenando la biblioteca"
+
+msgid "Library organised"
+msgstr "Biblioteca ordenada"
+
+msgid "Searching..."
+msgstr "Buscando..."
+
+msgid "No matches found"
+msgstr "No se encontraron coincidencias"
+
+msgid "Upload song"
+msgstr "Subir canción"
+
+msgid "Organise library"
+msgstr "Ordenar biblioteca"
+
+msgid "Artists"
+msgstr "Artistas"
+
+msgid "Search by song or artist"
+msgstr "Buscar por canción o artista"
+
+msgid "Browse files and folders"
+msgstr "Ver archivos y carpetas"
+
+msgid "Search artists"
+msgstr "Buscar artistas"
+
+msgid "Artist"
+msgstr "Artista"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Year"
+msgstr "Año"
+
+msgid "Merge"
+msgstr "Unir"
+
+msgid "Ready"
+msgstr "Lista"
+
+msgid "Remove vocals and make lyrics"
+msgstr "Quitar la voz y sacar la letra"
+
+msgid "Process again"
+msgstr "Procesar de nuevo"
+
+msgid "Vocal guide"
+msgstr "Voz guía"
+
+msgid "Lyrics timing"
+msgstr "Desfase de la letra"
+
+msgid "Another background"
+msgstr "Otro fondo"
+
+msgid "AI features are not installed"
+msgstr "Las funciones de IA no están instaladas"
+
+msgid "Song not found in the library"
+msgstr "La canción no está en la biblioteca"
+
+msgid "Volume must be a number from 0 to 100"
+msgstr "El volumen debe ser un número de 0 a 100"
+
+msgid "The song playing has no karaoke stage"
+msgstr "La canción que suena no tiene pantalla de karaoke"
+
+msgid "The shift must be a number of seconds"
+msgstr "El desfase debe ser un número de segundos"
+
+#, python-format
+msgid "%s is still being prepared; %s goes first"
+msgstr "%s aún se está preparando; primero va %s"
+
+msgid "The file is too large"
+msgstr "El archivo es demasiado grande"
+
+msgid "No file received"
+msgstr "No llegó ningún archivo"
+
+msgid "The library is already being organised"
+msgstr "La biblioteca ya se está ordenando"
+
+msgid "A title is required"
+msgstr "El título es obligatorio"
+
+msgid "Pitch"
+msgstr "Afinación"
+
+msgid "Entries"
+msgstr "Entradas"
+
+msgid "Sung"
+msgstr "Cantado"
+
+msgid "Best scores"
+msgstr "Mejores puntajes"
+
+msgid "No scores yet: they appear when someone sings with a microphone."
+msgstr "Todavía no hay puntajes: aparecen cuando alguien canta con micrófono."
+
+msgid "That song is not playing"
+msgstr "Esa canción no está sonando"
+
+msgid "Conversions"
+msgstr "Conversiones"
+
+msgid "Converting now"
+msgstr "Convirtiendo ahora"
+
+msgid "Waiting"
+msgstr "En espera"
+
+msgid "Finished"
+msgstr "Terminadas"
+
+msgid "Removing the vocals"
+msgstr "Quitando la voz"
+
+msgid "Saving the tracks"
+msgstr "Guardando las pistas"
+
+msgid "Detecting the language"
+msgstr "Detectando el idioma"
+
+msgid "Writing down the lyrics"
+msgstr "Sacando la letra"
+
+msgid "Timing every word"
+msgstr "Sincronizando cada palabra"
+
+msgid "Elapsed"
+msgstr "Lleva"
+
+#, python-format
+msgid "About %(time)s left"
+msgstr "Faltan unos %(time)s"
+
+msgid "Starting..."
+msgstr "Empezando..."
+
+#, python-format
+msgid "#%(n)s in line"
+msgstr "N.º %(n)s en la fila"
+
+#, python-format
+msgid "Took %(time)s"
+msgstr "Tardó %(time)s"
+
+#, python-format
+msgid "%(n)s lines"
+msgstr "%(n)s líneas"
+
+msgid "Nothing is being converted right now."
+msgstr "No se está convirtiendo nada ahora."
+
+msgid "No songs waiting."
+msgstr "No hay canciones en espera."
+
+msgid "No conversions yet."
+msgstr "Todavía no hay conversiones."
+
+msgid "Music"
+msgstr "Música"
+
+msgid "Voice"
+msgstr "Voz"
+
+msgid "Volumes"
+msgstr "Volúmenes"
+
+msgid "Real lyrics"
+msgstr "Letra real"
+
+msgid "Looking for the published lyrics..."
+msgstr "Buscando la letra publicada..."
+
+msgid "Look for the real lyrics again"
+msgstr "Buscar la letra real de nuevo"
+
+#, python-format
+msgid "Real lyrics (%(n)s%% heard)"
+msgstr "Letra real (%(n)s%% coincide)"
+
+msgid "Lyrics as heard"
+msgstr "Letra transcrita"
+
+msgid "Try another name or clear the filters."
+msgstr "Prueba con otro nombre o quita los filtros."
+
+msgid "The library is empty."
+msgstr "La biblioteca está vacía."
+
+msgid "Search for a song or upload one: it turns into karaoke on its own."
+msgstr "Busca una canción o sube una: se convierte en karaoke sola."
+
+msgid "Songs you add from search or upload are converted here, one at a time."
+msgstr "Las canciones que agregas desde la búsqueda o subes se convierten aquí, una por una."
+
+msgid "Restart?"
+msgstr "¿Reiniciar?"
+
+msgid "Skip?"
+msgstr "¿Pasar?"
+
+msgid "Add random songs"
+msgstr "Agregar canciones al azar"
+
+msgid "Off the Record version {version}"
+msgstr "Off the Record versión {version}"
+
+msgid "Off the Record is a fork of PiKaraoke."
+msgstr "Off the Record es un fork de PiKaraoke."
+
+msgid "PiKaraoke on GitHub"
+msgstr "PiKaraoke en GitHub"
+
+msgid "Shutdown failed: Off the Record does not have permission to power off this system."
+msgstr "No se pudo apagar: Off the Record no tiene permiso para apagar este sistema."
+
+msgid "Reboot failed: Off the Record does not have permission to restart this system."
+msgstr "No se pudo reiniciar: Off the Record no tiene permiso para reiniciar este sistema."
+
+msgid "Expand failed: Off the Record does not have permission to resize the filesystem."
+msgstr "No se pudo ampliar: Off the Record no tiene permiso para cambiar el tamaño del sistema de archivos."
+
+msgid "Karaoke screen"
+msgstr "Pantalla de karaoke"

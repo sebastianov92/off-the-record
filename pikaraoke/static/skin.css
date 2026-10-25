@@ -1,0 +1,1210 @@
+/* ===================================
+   SKIN
+   This fork's look, laid over PiKaraoke's Bulma theme. Loaded after custom.css
+   and made only of overrides, so upstream changes to the theme still merge.
+   Spatial: the page is an environment of slow coloured light, and the interface
+   floats in front of it in layers of glass. The window is frosted glass with a
+   lit rim; inside it, platters are lighter glass, fields are recessed, and the
+   navigation and the player float as capsules (ornaments). Depth comes from
+   blur, light and shadow; hover lifts a layer toward the viewer.
+   =================================== */
+
+/* Inter (SIL OFL 1.1, fonts/inter/LICENSE), shipped with the app: the mini PC
+   may have no internet, and a page should never wait on a font server. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("fonts/inter/inter-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("fonts/inter/inter-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* The environment behind the glass. */
+  --space: #06060a;
+  --light-pink: 336 100% 62%;
+  --light-blue: 222 100% 60%;
+  --light-amber: 34 100% 62%;
+  --light-teal: 176 70% 45%;
+
+  /* Glass, from back to front. */
+  --glass-window: rgba(30, 30, 38, 0.42);
+  --glass-ornament: rgba(40, 40, 48, 0.48);
+  --platter: rgba(255, 255, 255, 0.07);
+  --platter-hover: rgba(255, 255, 255, 0.12);
+  --well: rgba(0, 0, 0, 0.28);
+  --blur: blur(40px) saturate(180%);
+  --rim: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --lift: 0 30px 80px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.25);
+  --lift-small: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --recess: inset 0 1px 3px rgba(0, 0, 0, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Vibrant text: white at three strengths, so it stays legible on any colour. */
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.68);
+  --faint: rgba(255, 255, 255, 0.58);
+  --accent: #ff5c93;
+
+  /* Concentric corners: a shape nested in another has the outer radius minus
+     the gap between their edges, so both curves share one centre. */
+  --radius-window: 36px;
+  --window-pad: 26px;
+  --radius-nested: calc(var(--radius-window) - var(--window-pad));
+  --nav-item: 48px;
+  --nav-inset: 6px;
+  --radius-nav: calc(var(--nav-item) / 2 + var(--nav-inset));
+  --radius-menu: 28px;
+  --menu-inset: 8px;
+  --mini-main: 52px;
+  --mini-inset: 8px;
+  --radius-art: 10px;
+  --spring: cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --bulma-family-primary: "Inter", -apple-system, "SF Pro Text", system-ui, "Segoe UI", Roboto,
+    sans-serif;
+  --bulma-scheme-h: 240;
+  --bulma-scheme-s: 6%;
+  --bulma-text-h: 0deg;
+  --bulma-text-s: 0%;
+  --bulma-scheme-main-l: 12%;
+  --bulma-body-background-color: var(--space);
+  --bulma-text-weak-l: 70%;
+  --bulma-text-l: 100%;
+  --bulma-text-strong-l: 100%;
+  --bulma-primary-h: 0deg;
+  --bulma-primary-s: 0%;
+  --bulma-primary-l: 100%;
+  --bulma-primary-invert-l: 0%;
+  --bulma-primary-on-scheme-l: 100%;
+  --bulma-link-h: 0deg;
+  --bulma-link-s: 0%;
+  --bulma-link-l: 100%;
+  --bulma-link-invert-l: 0%;
+  --bulma-link-on-scheme-l: 100%;
+  --bulma-info-h: 336deg;
+  --bulma-info-s: 100%;
+  --bulma-info-l: 68%;
+  --bulma-success-h: 147deg;
+  --bulma-success-s: 60%;
+  --bulma-success-l: 58%;
+  --bulma-warning-h: 38deg;
+  --bulma-warning-s: 90%;
+  --bulma-warning-l: 62%;
+  --bulma-danger-h: 352deg;
+  --bulma-danger-s: 90%;
+  --bulma-danger-l: 66%;
+  --bulma-radius: 999px;
+  --bulma-radius-small: 999px;
+  --bulma-radius-medium: var(--radius-nested);
+  --bulma-radius-large: var(--radius-window);
+}
+
+/* Only pages with the navigation get the environment: the TV screen (splash,
+   a blank page) keeps its own look. */
+/* The colour sits on <html>: a body background would paint over the lights. */
+html:has(.navbar.is-primary) {
+  background: var(--space);
+}
+body:has(.navbar.is-primary) {
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The environment: four soft lights drifting slowly behind everything. */
+body:has(.navbar.is-primary)::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(34% 30% at 18% 18%, hsl(var(--light-pink) / 0.55), transparent 70%),
+    radial-gradient(32% 30% at 85% 12%, hsl(var(--light-blue) / 0.5), transparent 70%),
+    radial-gradient(30% 28% at 78% 78%, hsl(var(--light-amber) / 0.32), transparent 70%),
+    radial-gradient(34% 30% at 22% 82%, hsl(var(--light-teal) / 0.36), transparent 70%);
+  will-change: transform;
+  animation: space-drift 36s ease-in-out infinite alternate;
+}
+@keyframes space-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -2%, 0) rotate(6deg) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-3%, 3%, 0) rotate(-4deg) scale(1.02);
+  }
+}
+
+/* Upstream prints its empty and now-playing lines in warning amber and its add
+   buttons in green; here colour is kept for what needs attention. */
+#now-playing.has-text-warning,
+#up-next.has-text-warning {
+  color: var(--text) !important;
+}
+#up-next {
+  margin-bottom: 0 !important;
+}
+.table td > p.has-text-warning:only-child {
+  color: var(--muted) !important;
+}
+.add-random.has-text-success,
+.add-random .has-text-success {
+  color: var(--text) !important;
+}
+.has-text-grey,
+.has-text-grey-light {
+  color: var(--muted) !important;
+}
+.has-text-grey-lighter {
+  color: var(--text) !important;
+}
+.has-text-grey-dark {
+  color: var(--faint) !important;
+}
+
+/* Type: bold titles, quiet secondary text. */
+.title {
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.container > .box > header .title {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700 !important;
+}
+.box h2,
+.box h2.title,
+.box h3.title {
+  font-size: 17px !important;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 24px 0 12px;
+}
+.tag,
+.progress,
+.mini-singer,
+.library-row,
+.processing-row,
+#song-count,
+.table td {
+  font-variant-numeric: tabular-nums;
+}
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+.input:focus-visible,
+.textarea:focus-visible,
+.select select:focus-visible {
+  outline: none;
+}
+a {
+  color: var(--text);
+}
+
+/* Navigation: an ornament, a capsule of glass floating above the window. */
+.navbar.is-primary {
+  --bulma-navbar-item-color: var(--muted);
+  --bulma-navbar-height: var(--nav-item);
+  min-height: calc(var(--nav-item) + 2 * var(--nav-inset));
+  padding: var(--nav-inset);
+  margin: 6px 4px 0;
+  background: transparent;
+  border-radius: var(--radius-nav);
+}
+/* The glass lives on a layer behind each surface, never on the surface itself:
+   a backdrop-filter on an element makes it the frame of every fixed child (the
+   dialogs inside the window were cut to the window's height) and blinds any
+   glass inside it (the menu could not blur the page behind it). */
+.navbar.is-primary::before,
+.container > .box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+/* The bar and its menu are solid black: they float on the page's lights without
+   letting them through, so they need no blur. */
+.navbar.is-primary::before {
+  background: #000000;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: var(--rim), var(--lift-small);
+}
+.navbar.is-primary .navbar-brand {
+  min-height: var(--nav-item);
+  align-items: center;
+  gap: 4px;
+}
+/* Each item is as tall as the capsule minus its inset, with the capsule's radius
+   minus that inset: an icon alone is a circle, an icon with its label a pill. */
+.navbar.is-primary .navbar-brand > .navbar-item,
+.navbar.is-primary #current-user,
+.navbar.is-primary .navbar-burger {
+  height: var(--nav-item);
+  min-width: var(--nav-item);
+  margin: 0;
+  padding: 0 14px;
+  justify-content: center;
+  border-radius: calc(var(--radius-nav) - var(--nav-inset));
+}
+.navbar.is-primary .navbar-burger {
+  width: var(--nav-item);
+  padding: 0;
+}
+/* The singer's avatar and the hamburger sit together at the capsule's far end,
+   apart from the destinations. */
+.navbar.is-primary #current-user {
+  margin-inline-start: auto;
+}
+.navbar.is-primary .navbar-item,
+.navbar.is-primary .navbar-burger {
+  color: var(--muted);
+  font-weight: 600;
+  background: transparent;
+  transition:
+    background-color 0.25s var(--ease),
+    color 0.25s var(--ease),
+    transform 0.3s var(--spring);
+}
+.navbar.is-primary .navbar-item:hover,
+.navbar.is-primary .navbar-burger:hover {
+  background: var(--platter-hover);
+  color: var(--text);
+}
+.navbar.is-primary .navbar-item.is-active {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.navbar.is-primary .navbar-item:active,
+.navbar.is-primary .navbar-burger:active {
+  transform: scale(0.94);
+}
+.navbar.is-primary #current-user.has-text-success {
+  color: var(--muted) !important;
+}
+.navbar.is-primary .navbar-menu {
+  margin-top: 10px;
+  padding: var(--menu-inset);
+  background: #000000;
+  border-radius: var(--radius-menu);
+  box-shadow: var(--rim), var(--lift);
+}
+.navbar.is-primary .navbar-menu .navbar-item {
+  border-radius: calc(var(--radius-menu) - var(--menu-inset));
+}
+.navbar.is-primary .navbar-divider {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* The window: frosted glass with a lit rim, lifted off the environment. */
+.container > .box {
+  position: relative;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-window);
+  box-shadow: none;
+  padding: var(--window-pad);
+  margin-top: 12px !important;
+}
+.container > .box::before {
+  background: var(--glass-window);
+  box-shadow: var(--rim), var(--lift);
+}
+.container > .box > header > div {
+  flex-wrap: wrap;
+  row-gap: 12px;
+  align-items: center !important;
+}
+/* Upstream takes a card's radius from --bulma-radius, which is a pill here, and
+   paints its header in the page colour: the header's corners blew out into a
+   dark band. A card is one platter, its header set apart by a hairline. */
+.card {
+  --bulma-card-radius: var(--radius-nested);
+  --bulma-card-background-color: var(--platter);
+  --bulma-card-header-background-color: transparent;
+  --bulma-card-header-shadow: none;
+}
+.card-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.box .box,
+.card {
+  background: var(--platter);
+  border: 0;
+  border-radius: var(--radius-nested);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Buttons: capsules of glass that brighten under the pointer and give when pressed.
+   The one primary action is a white capsule. */
+.button {
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  transition:
+    background-color 0.25s var(--ease),
+    transform 0.3s var(--spring),
+    box-shadow 0.25s var(--ease);
+}
+.button.is-small {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+.button:active:not([disabled]) {
+  transform: scale(0.95);
+}
+.button:not(.is-primary, .is-text, .is-ghost, .delete, .is-outlined, .is-static),
+.button.is-link:not(.is-outlined),
+.button.is-info:not(.is-outlined),
+.button.is-success:not(.is-outlined),
+.button.is-warning:not(.is-outlined) {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: var(--text);
+}
+.button:not(.is-primary, .is-text, .is-ghost, .delete, .is-outlined, .is-static):hover {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: var(--text);
+}
+.button.is-primary,
+#search-link {
+  background-color: rgba(255, 255, 255, 0.94);
+  color: #000000;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+}
+.button.is-primary:hover,
+#search-link:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+.button,
+.mini-button,
+.library-actions a,
+.add-random {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.button.is-danger {
+  background-color: hsla(352, 90%, 60%, 0.22) !important;
+  color: hsl(352, 100%, 82%) !important;
+}
+.button.is-outlined {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25) !important;
+  color: var(--text);
+}
+.button.is-danger.is-outlined {
+  background-color: transparent !important;
+  box-shadow: inset 0 0 0 1px hsla(352, 90%, 70%, 0.5) !important;
+}
+.button.is-static {
+  background-color: var(--well);
+  color: var(--muted);
+}
+
+/* Fields are recessed into the glass. */
+.input,
+.textarea,
+.select select {
+  background-color: var(--well);
+  border: 0;
+  box-shadow: var(--recess);
+  color: var(--text);
+  font-size: 15px;
+}
+.input,
+.select select {
+  height: 40px;
+  border-radius: 999px;
+  padding-left: 18px;
+}
+.textarea {
+  border-radius: 18px;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--faint);
+}
+.input:focus,
+.textarea:focus,
+.select select:focus {
+  box-shadow: var(--recess), 0 0 0 2px rgba(255, 255, 255, 0.7);
+}
+.select.is-small select {
+  height: 34px;
+  font-size: 13px;
+}
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: var(--muted);
+}
+.checkbox input,
+.radio input,
+input[type="range"] {
+  accent-color: var(--text);
+}
+
+/* Tabs: a segmented control, a recessed track with a lit platter on the choice. */
+.tabs ul {
+  display: inline-flex;
+  flex-grow: 0;
+  gap: 2px;
+  padding: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--well);
+  box-shadow: var(--recess);
+}
+.tabs a,
+.tabs.is-boxed a {
+  border: 0 !important;
+  border-radius: 999px !important;
+  margin: 0;
+  padding: 6px 18px;
+  color: var(--muted);
+  font-weight: 600;
+  background: transparent !important;
+  transition: background-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+.tabs li.is-active a {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Tags: small capsules tinted with their meaning. */
+.tag:not(body) {
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  flex: none;
+  white-space: nowrap;
+}
+.tag.is-success:not(body) {
+  background-color: hsla(147, 60%, 50%, 0.22);
+  color: hsl(147, 70%, 76%);
+}
+.tag.is-warning:not(body),
+.tag.is-link:not(body) {
+  background-color: hsla(38, 95%, 55%, 0.22);
+  color: hsl(38, 100%, 78%);
+}
+.tag.is-danger:not(body) {
+  background-color: hsla(352, 90%, 60%, 0.22);
+  color: hsl(352, 100%, 82%);
+}
+.tag.is-info:not(body) {
+  background-color: hsla(336, 100%, 62%, 0.24);
+  color: hsl(336, 100%, 84%);
+}
+
+/* Tables and lists sit on the glass; rows light up under the pointer. */
+.table {
+  background: transparent;
+  --bulma-table-striped-row-even-background-color: transparent;
+  --bulma-table-row-hover-background-color: var(--platter);
+  --bulma-table-cell-border-color: rgba(255, 255, 255, 0.08);
+}
+.table td,
+.table th {
+  vertical-align: middle;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.table th {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.progress {
+  --bulma-progress-border-radius: 999px;
+  --bulma-progress-bar-background-color: var(--well);
+  --bulma-progress-value-background-color: var(--accent);
+  height: 8px;
+  box-shadow: var(--recess);
+}
+.progress::-webkit-progress-value {
+  background: var(--accent);
+  box-shadow: 0 0 12px hsla(336, 100%, 62%, 0.6);
+}
+.progress::-moz-progress-bar {
+  background: var(--accent);
+}
+
+/* Floating layers: toasts and dialogs are glass too. */
+.notification {
+  background: var(--glass-ornament);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  color: var(--text);
+  border-radius: 24px;
+  box-shadow: var(--rim), var(--lift-small);
+}
+.modal-background {
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.modal-card,
+.modal-content {
+  border-radius: var(--radius-window);
+  background: var(--glass-window);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  box-shadow: var(--rim), var(--lift);
+}
+.modal-card-head,
+.modal-card-body,
+.modal-card-foot {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+/* Upstream zeroes the body padding because its dialogs are option lists; the
+   library's dialogs are forms, so head, fields and buttons share one inset. */
+#meta-modal .modal-card,
+#merge-modal .modal-card,
+#admin-login-modal .modal-card {
+  --bulma-modal-card-head-padding: 24px 24px 12px;
+  --bulma-modal-card-body-padding: 8px 24px;
+}
+#meta-modal .modal-card-foot,
+#merge-modal .modal-card-foot,
+#admin-login-modal .modal-card-foot {
+  padding: 16px 24px 24px;
+}
+/* On a short screen (a small window, a phone with its keyboard up) Bulma squeezes
+   a dialog's body until its field is cut in half. A form keeps its full height
+   and the whole dialog scrolls instead. */
+#text-prompt-modal .modal-card,
+#meta-modal .modal-card,
+#merge-modal .modal-card,
+#admin-login-modal .modal-card {
+  overflow-y: auto;
+}
+#text-prompt-modal .modal-card-body,
+#meta-modal .modal-card-body,
+#merge-modal .modal-card-body,
+#admin-login-modal .modal-card-body {
+  flex-shrink: 0;
+  overflow: visible;
+}
+/* Log out is a form button in the menu; it reads like the links around it. */
+#admin-logout {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+/* The TV's autoplay prompt (splash.html): one centred message and its one action,
+   inset far enough to clear the rounded corners. p-3 is an !important helper. */
+#permissions-modal-content {
+  width: min(560px, calc(100% - 40px));
+  max-height: calc(100vh - 40px);
+  margin: 0 auto;
+  padding: 36px 40px 32px !important;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.55;
+  text-wrap: balance;
+}
+#permissions-modal-content .has-text-centered {
+  margin-top: 20px !important;
+}
+#permissions-button {
+  height: 52px;
+  margin-top: 0 !important;
+  padding: 0 32px;
+  font-size: 17px;
+  background-color: rgba(255, 255, 255, 0.94);
+  color: #000000;
+}
+#permissions-button:hover {
+  background-color: #ffffff;
+}
+/* The TV's menu (splash.html): the app in a window floating over the screen. On a
+   computer its corners wrap the app's own window, radius 30 about 6px in, so 36.
+   A phone keeps it as it is; 650px is the width splash.html already splits at. */
+@media (min-width: 651px) {
+  #menu-container {
+    border-radius: 36px;
+    box-shadow: var(--rim), var(--lift);
+  }
+}
+hr {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* The organised library's rows (catalog/library.js): each song a platter that
+   lifts toward you under the pointer; adding to the queue is the bright action. */
+.library-row {
+  min-height: 76px;
+  padding: 12px !important;
+  margin: 0 -12px 4px;
+  border-bottom: 0 !important;
+  border-radius: calc(var(--radius-nested) + 12px);
+  transition:
+    background-color 0.25s var(--ease),
+    transform 0.35s var(--spring),
+    box-shadow 0.25s var(--ease);
+}
+@media (hover: hover) {
+  .library-row:hover {
+    background: var(--platter);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 10px 30px rgba(0, 0, 0, 0.25);
+    transform: scale(1.012);
+  }
+}
+.library-title {
+  font-weight: 600 !important;
+  font-size: 16px;
+}
+.library-sub {
+  font-size: 13px !important;
+  color: var(--muted);
+}
+/* Inline links get a taller hit area without moving the lines around them. */
+.library-sub a,
+.library-browse {
+  color: var(--muted);
+  padding: 15px 0;
+}
+.library-sub a:hover {
+  color: var(--text);
+}
+.library-cover {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: var(--radius-art) !important;
+  background: var(--platter) !important;
+  color: var(--faint);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+.library-actions a {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 18px;
+  transition: background-color 0.25s var(--ease), transform 0.3s var(--spring);
+}
+.library-actions a.has-text-success {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.14);
+}
+.library-actions a:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--text);
+}
+.library-actions a:active {
+  transform: scale(0.9);
+}
+
+/* Loading: the rows to come, breathing softly. */
+.skeleton-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 76px;
+  padding: 12px 0;
+}
+.skeleton-block {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-art);
+  animation: glass-breathe 1.6s ease-in-out infinite;
+}
+.skeleton-cover {
+  width: 52px;
+  height: 52px;
+  flex: none;
+}
+.skeleton-lines {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+.skeleton-line {
+  height: 14px;
+  width: 60%;
+  border-radius: 999px;
+}
+.skeleton-line.is-short {
+  height: 12px;
+  width: 35%;
+}
+@keyframes glass-breathe {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* Empty: a recessed well with one sentence saying what to do. */
+.empty-state {
+  padding: 14px 18px;
+  border-radius: var(--radius-nested);
+  background: var(--well);
+  box-shadow: var(--recess);
+  color: var(--muted);
+}
+.empty-state .empty-title {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Mini player (partials/mini_player.html): an ornament floating at the bottom of
+   every page, glass over whatever scrolls beneath it. */
+.mini-player {
+  position: fixed;
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(720px, calc(100% - 24px));
+  z-index: 30;
+  background: var(--glass-ornament);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-radius: calc(var(--mini-main) / 2 + var(--mini-inset));
+  box-shadow: var(--rim), var(--lift);
+  padding: var(--mini-inset) var(--mini-inset) var(--mini-inset) 20px;
+}
+.mini-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mini-info {
+  flex: 1;
+  min-width: 0;
+}
+.mini-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-singer {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mini-button {
+  min-width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color 0.25s var(--ease), transform 0.3s var(--spring);
+}
+.mini-button:hover {
+  background: var(--platter-hover);
+}
+.mini-button:active {
+  transform: scale(0.9);
+}
+.mini-button.mini-main {
+  width: var(--mini-main);
+  height: var(--mini-main);
+  background: rgba(255, 255, 255, 0.94);
+  color: #000000;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+.mini-button.mini-main:hover {
+  background: #ffffff;
+}
+/* Restart and skip ask for a second tap instead of a browser dialog over the song. */
+.mini-button.is-confirming {
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 16px;
+}
+.mini-button i::before {
+  margin: 0;
+}
+.mini-volumes {
+  display: grid;
+  gap: 12px;
+  padding: 10px 12px 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+}
+.mini-volume {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.mini-volume input {
+  width: 100%;
+}
+body.has-mini-player {
+  padding-bottom: 110px;
+}
+body.has-mini-player .notification-stack {
+  bottom: 110px;
+}
+
+@media screen and (max-width: 768px) {
+  :root {
+    --radius-window: 30px;
+    --window-pad: 18px;
+  }
+  .container > .box > header .title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}
+
+/* Touch screens: every control at least 44px, fields at 16px so phones do not
+   zoom on focus, and a lighter blur to spare the battery during a long night. */
+@media (pointer: coarse) {
+  :root {
+    --blur: blur(24px) saturate(170%);
+  }
+  .button,
+  .button.is-small {
+    height: 44px;
+    padding: 0 18px;
+    font-size: 15px;
+  }
+  .input,
+  .select select,
+  .select.is-small select {
+    height: 44px;
+    font-size: 16px;
+  }
+  #randomNumberInput {
+    min-width: 52px;
+    text-align: center;
+  }
+  .tabs a,
+  .tabs.is-boxed a {
+    padding: 11px 20px;
+  }
+  .library-actions a {
+    width: 44px;
+    height: 44px;
+  }
+  .add-random {
+    display: inline-grid;
+    place-items: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Motion and transparency the viewer asked to reduce. */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  .skeleton-block {
+    animation: none;
+  }
+  .library-row:hover {
+    transform: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .navbar.is-primary::before,
+  .container > .box::before,
+  .mini-player,
+  .notification,
+  .modal-card,
+  .navbar.is-primary .navbar-menu {
+    background: #1d1d23;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Singer avatars (static/ai/avatars.js): a face drawn from each name. */
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  vertical-align: middle;
+}
+.avatar svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.avatar-pop {
+  animation: avatar-pop 0.45s var(--spring);
+}
+@keyframes avatar-pop {
+  0% {
+    transform: scale(0.9);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.singer-avatar[data-avatar-name] {
+  width: 30px;
+  height: 30px;
+}
+.queue-avatar,
+.home-avatar {
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+}
+.mini-avatar {
+  width: 40px;
+  height: 40px;
+}
+.mini-avatar:empty {
+  display: none;
+}
+.avatar-preview {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 4px auto 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar-pop {
+    animation: none;
+  }
+}
+
+/* Info's About card leads with the logo (static/brand). */
+.about-logo {
+  display: block;
+  width: min(320px, 80%);
+  margin: 4px auto 20px;
+}
+
+/* Inside the TV's menu (splash.js marks the app it shows) the page is plain black:
+   the coloured lights stay a phone's. */
+html.in-tv-menu:has(.navbar.is-primary) {
+  background: #000000;
+}
+html.in-tv-menu body:has(.navbar.is-primary)::before {
+  display: none;
+}
+
+/* Home (templates/home.html): the song on now with its transport, what is next,
+   then the controls grouped by what they change. It is the full remote, so the
+   mini player steps aside here. */
+body:has(#home-player) #mini-player {
+  display: none !important;
+}
+body.has-mini-player:has(#home-player) {
+  padding-bottom: 0;
+}
+.home-player {
+  display: grid;
+  /* minmax(0, 1fr): a plain 1fr will not shrink below its widest row, which pushed
+     the cards past the window on a phone. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  max-width: 680px;
+}
+.home-card {
+  background: var(--platter);
+  border-radius: var(--radius-nested);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 16px 18px;
+}
+.box .home-label {
+  margin: 0 0 12px !important;
+  font-size: 13px !important;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.np-song {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+.home-now .np-song {
+  font-size: 22px;
+  font-weight: 700;
+}
+.np-singer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+.np-singer .home-avatar {
+  margin-right: 0;
+}
+.home-now .np-singer .home-avatar {
+  width: 34px;
+  height: 34px;
+}
+.np-key {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--well);
+  font-size: 13px;
+}
+.np-empty {
+  margin: 0;
+  color: var(--muted);
+}
+.home-transport {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  margin-top: 20px;
+}
+.home-transport-button {
+  min-width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  font: 600 22px var(--bulma-family-primary);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: background-color 0.25s var(--ease), transform 0.3s var(--spring);
+}
+.home-transport-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.home-transport-button:active {
+  transform: scale(0.92);
+}
+.home-transport-button.is-main {
+  width: 76px;
+  height: 76px;
+  font-size: 30px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #000000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+.home-transport-button.is-confirming {
+  padding: 0 18px;
+  font-size: 15px;
+}
+.home-transport-button i::before {
+  margin: 0;
+}
+.home-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+}
+.home-row-label {
+  font-weight: 500;
+}
+.home-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+}
+.home-slider input[type="range"] {
+  flex: 1;
+  min-width: 0;
+}
+.home-slider .icon {
+  font-size: 18px;
+}
+.home-stepper {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--well);
+  box-shadow: var(--recess);
+}
+.home-stepper .button {
+  width: 44px;
+  padding: 0;
+}
+.home-stepper #ai-offset {
+  min-width: 64px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.home-wide {
+  width: 100%;
+  margin-top: 12px;
+}
+.home-key-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.home-key-head .home-label {
+  margin-bottom: 0 !important;
+  flex: 1;
+}
+#semitones-info {
+  color: var(--muted);
+}

@@ -123,8 +123,14 @@ def build_ffmpeg_cmd(
         video = video.filter("tpad", stop_mode="clone", stop_duration=600)
         if cdg_pixel_scaling:
             video = video.filter("scale", -1, 720, flags="neighbor")
+    elif fr.audio_only:
+        video = None
     else:
         video = input.video
+
+    # The AI instrumental has no picture: the splash draws lyrics over it instead.
+    streams = [audio] if video is None else [audio, video]
+    video_opts = {} if video is None else {"vcodec": vcodec, "video_bitrate": vbitrate}
 
     cdg_opts = {"pix_fmt": "yuv420p"}
     if is_cdg and fr.duration_exact:
@@ -136,15 +142,13 @@ def build_ffmpeg_cmd(
             "+faststart" if buffer_fully_before_playback else "frag_keyframe+default_base_moof"
         )
         output = ffmpeg.output(
-            audio,
-            video,
+            *streams,
             fr.output_file,
-            vcodec=vcodec,
+            **video_opts,
             acodec=acodec,
             preset="ultrafast",
             listen=1,
             f="mp4",
-            video_bitrate=vbitrate,
             movflags=movflags,
             **(cdg_opts if is_cdg else {}),
         )
@@ -154,10 +158,9 @@ def build_ffmpeg_cmd(
         # - mp4: Stream concatenates init + segments for progressive playback
         # - hls: Browser requests segments via .m3u8 playlist
         output = ffmpeg.output(
-            audio,
-            video,
+            *streams,
             fr.output_file,
-            vcodec=vcodec,
+            **video_opts,
             acodec="aac",
             audio_bitrate="192k",
             ac=2,  # Force stereo
@@ -170,12 +173,9 @@ def build_ffmpeg_cmd(
             hls_segment_type="fmp4",
             hls_fmp4_init_filename=fr.init_filename,
             hls_segment_filename=fr.segment_pattern,
-            video_bitrate=vbitrate,
             **(cdg_opts if is_cdg else {}),
-            **{
-                "fps_mode": "cfr",
-                "avoid_negative_ts": "make_zero",
-            },
+            **({} if video is None else {"fps_mode": "cfr"}),
+            avoid_negative_ts="make_zero",
         )
 
     args = output.get_args()

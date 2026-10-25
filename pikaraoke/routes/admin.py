@@ -32,6 +32,14 @@ class AdminPasswordForm(Schema):
 
 class AuthForm(Schema):
     admin_password = fields.String(load_default="", metadata={"description": "Admin password"})
+    next = fields.String(load_default="", metadata={"description": "Page to return to"})
+
+
+def _local_page(path: str) -> str:
+    """The page to return to after logging in: a path on this server, never another site."""
+    if path.startswith("/") and not path.startswith("//") and "\\" not in path:
+        return path
+    return url_for("home.home")
 
 
 # A desktop session's polkit agent would otherwise put a password dialog on the TV and
@@ -123,7 +131,7 @@ def _announce_halt(message: str, steps: list[HostStep], refused: str = "") -> Re
 def quit():
     """Exit the PiKaraoke application."""
     # MSG: Message shown after quitting pikaraoke.
-    return _announce_halt(_("Exiting pikaraoke now!"), [])
+    return _announce_halt(_("Exiting Off the Record now!"), [])
 
 
 @admin_bp.route("/shutdown", methods=["POST"])
@@ -134,7 +142,7 @@ def shutdown():
         _("Shutting down system now!"),
         [_SHUTDOWN],
         # MSG: Message shown when the system refuses to let pikaraoke shut it down.
-        _("Shutdown failed: pikaraoke does not have permission to power off this system."),
+        _("Shutdown failed: Off the Record does not have permission to power off this system."),
     )
 
 
@@ -146,7 +154,7 @@ def reboot():
         _("Rebooting system now!"),
         [_REBOOT],
         # MSG: Message shown when the system refuses to let pikaraoke reboot it.
-        _("Reboot failed: pikaraoke does not have permission to restart this system."),
+        _("Reboot failed: Off the Record does not have permission to restart this system."),
     )
 
 
@@ -158,7 +166,9 @@ def expand_fs():
         # MSG: Message shown after expanding the filesystem.
         flash(_("Expanding filesystem and rebooting system now!"), "is-danger")
         # MSG: Message shown when the system refuses to let pikaraoke expand the filesystem.
-        refused = _("Expand failed: pikaraoke does not have permission to resize the filesystem.")
+        refused = _(
+            "Expand failed: Off the Record does not have permission to resize the filesystem."
+        )
         threading.Thread(target=delayed_halt, args=[k, [_EXPAND, _REBOOT], refused]).start()
     else:
         # MSG: Message shown after trying to expand the filesystem on a non-raspberry pi device.
@@ -187,8 +197,8 @@ def auth(form):
     else:
         # MSG: Message shown after failing to login as admin
         flash(_("Incorrect admin password!"), "is-danger")
-    # The login form only renders on the settings page, so that is where it ends.
-    return redirect(url_for("settings.settings"))
+    # The login form lives in the menu of every page, so it ends where it began.
+    return redirect(_local_page(form["next"]))
 
 
 @admin_bp.route("/admin_password", methods=["POST"])
@@ -219,4 +229,5 @@ def logout():
     session.pop("admin", None)
     # MSG: Message shown after logging out as admin successfully
     flash(_("Logged out of admin mode!"), "is-success")
-    return redirect(url_for("settings.settings"))
+    # Settings is host-only, so home is the page a guest can still see.
+    return redirect(url_for("home.home"))

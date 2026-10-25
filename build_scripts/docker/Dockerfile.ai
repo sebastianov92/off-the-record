@@ -1,0 +1,66 @@
+# Off the Record: pikaraoke plus the AI worker (Demucs and faster-whisper on CPU).
+# Debian rather than upstream's Alpine: PyTorch and CTranslate2 ship no musl wheels.
+# linux/amd64 only: sphn (a Demucs dependency) ships no Linux arm64 wheel.
+#   docker build --platform linux/amd64 -f build_scripts/docker/Dockerfile.ai .
+FROM python:3.12-slim-bookworm
+
+WORKDIR /app
+
+COPY --from=ghcr.io/astral-sh/uv:0.13.0 /uv /usr/local/bin/
+
+# Static ffmpeg with librubberband, so a key change also shifts the instrumental
+# and the vocal guide (most distro and Homebrew builds lack rubberband).
+COPY --from=mwader/static-ffmpeg:7.0 /ffprobe /ffmpeg /usr/local/bin/
+
+# yt-dlp solves YouTube's JS challenges with node; bookworm's own nodejs is too old.
+COPY --from=node:22-bookworm-slim /usr/local/bin/node /usr/local/bin/node
+
+# tzdata: TZ names a zone only when the zoneinfo files exist. libgomp1: OpenMP
+# for CTranslate2 (faster-whisper).
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl tzdata libgomp1 && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV VIRTUAL_ENV=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+ENV UV_LINK_MODE=copy
+
+COPY pyproject.toml uv.lock ./
+
+# PyTorch from its CPU index first: the PyPI wheel drags in several GB of CUDA
+# libraries the mini PC cannot use. The rest then finds torch already satisfied.
+RUN uv venv /app/.venv --python /usr/local/bin/python3 && \
+    uv pip install --no-cache torch --index-url https://download.pytorch.org/whl/cpu && \
+    uv pip install --no-cache -r pyproject.toml --extra ai && \
+    uv pip install --no-cache pip
+
+COPY docs ./docs
+COPY pikaraoke ./pikaraoke
+RUN uv pip install --no-cache --no-deps .
+
+# .cache exists up front so nothing running as root at start (the entrypoint,
+# an emulator) can create it first and leave yt-dlp unable to write its cache.
+RUN useradd --create-home --uid 1000 pikaraoke && \
+    mkdir -p /home/pikaraoke/.pikaraoke /home/pikaraoke/.cache /app/pikaraoke-songs && \
+    chown -R pikaraoke:pikaraoke /app/pikaraoke-songs /home/pikaraoke /app/.venv
+
+# Models download on first use into the data volume, so an update of the image
+# does not fetch them again. Xet transfers crawled at ~100 KB/s in testing.
+ENV HOME=/home/pikaraoke \
+    HF_HOME=/home/pikaraoke/.pikaraoke/models \
+    HF_HUB_DISABLE_XET=1 \
+    PYTHONUNBUFFERED=1
+COPY build_scripts/docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Links the GHCR package to the fork's repository.
+LABEL org.opencontainers.image.source="https://github.com/sebastianov92/pikaraoke" \
+      org.opencontainers.image.title="Off the Record" \
+      org.opencontainers.image.licenses="GPL-3.0"
+
+VOLUME ["/app/pikaraoke-songs", "/home/pikaraoke/.pikaraoke"]
+EXPOSE 5555
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5555/ || exit 1
+
+ENTRYPOINT ["entrypoint.sh"]

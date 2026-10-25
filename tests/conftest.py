@@ -24,6 +24,8 @@ _BASE_TEMPLATE_ENDPOINTS = [
     ("/", "home.home"),
     ("/queue", "queue.queue"),
     ("/browse", "files.browse"),
+    ("/library", "catalog.library"),
+    ("/processing", "ai.processing"),
     ("/search", "search.search"),
     ("/info", "info.info"),
     ("/settings", "settings.settings"),
@@ -32,6 +34,8 @@ _BASE_TEMPLATE_ENDPOINTS = [
     ("/sessions", "sessions.sessions"),
     ("/api/sessions/singers", "sessions_api.get_singers"),
     ("/api/enqueue", "queue_api.enqueue_form"),
+    ("/auth", "admin.auth"),
+    ("/logout", "admin.logout"),
 ]
 
 
@@ -83,6 +87,7 @@ def make_route_app(blueprint, linked_endpoints, admin: bool = True):
     app.jinja_env.globals.update(
         url_escape=quote,
         is_admin=lambda: admin,
+        has_admin_password=lambda: not admin,
         has_active_session=lambda: False,
         active_session_name=lambda: "",
     )
@@ -269,6 +274,7 @@ class MockKaraoke:
         self.play_history = MockPlayHistory()
         self.volume = 0.85
         self.running = True
+        self.now_playing_ai = None
 
         # Set preferences that differ from defaults
         self.preferences.set("enable_fair_queue", True)

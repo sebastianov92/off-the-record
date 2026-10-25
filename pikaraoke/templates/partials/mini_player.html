@@ -1,0 +1,32 @@
+{# Persistent player bar for admins: the song on screen, transport buttons and, opened,
+   the music and vocal-guide volumes. Outside .box so SPA navigation keeps it. #}
+<div id="mini-player" class="mini-player is-hidden">
+	<div id="mini-volumes" class="mini-volumes is-hidden">
+		<label class="mini-volume">
+			{# MSG: Label of the slider for the song's (instrumental) volume. #}
+			<span>{% trans %}Music{% endtrans %}</span>
+			<input id="mini-music" type="range" min="0" max="1" step="0.025" />
+		</label>
+		<label class="mini-volume" id="mini-guide-row">
+			{# MSG: Label of the slider for the original singer's voice played as a guide. #}
+			<span>{% trans %}Voice{% endtrans %}</span>
+			<input id="mini-guide" type="range" min="0" max="100" step="5" />
+		</label>
+	</div>
+	<div class="mini-bar">
+		<span id="mini-avatar" class="avatar mini-avatar"></span>
+		<div class="mini-info">
+			<div id="mini-title" class="mini-title"></div>
+			<div id="mini-singer" class="mini-singer"></div>
+		</div>
+		<div class="mini-buttons">
+			{# MSG: Shown on the restart button after one tap; a second tap restarts the song. #}
+			<button id="mini-restart" class="mini-button" title="{{ _('Restart Song') }}" aria-label="{{ _('Restart Song') }}" data-confirm="{{ _('Restart?') }}"><i class="icon icon-to-start"></i></button>
+			<button id="mini-pause" class="mini-button mini-main" title="{{ _('Play/Pause') }}" aria-label="{{ _('Play/Pause') }}"><i class="icon icon-pause"></i></button>
+			{# MSG: Shown on the skip button after one tap; a second tap skips to the next song. #}
+			<button id="mini-skip" class="mini-button" title="{{ _('Stop Current Song') }}" aria-label="{{ _('Stop Current Song') }}" data-confirm="{{ _('Skip?') }}"><i class="icon icon-to-end"></i></button>
+			{# MSG: Button that shows the music and voice volume sliders. #}
+			<button id="mini-volume-toggle" class="mini-button" title="{{ _('Volumes') }}" aria-label="{{ _('Volumes') }}" aria-expanded="false"><i class="icon icon-volume-up"></i></button>
+		</div>
+	</div>
+</div>

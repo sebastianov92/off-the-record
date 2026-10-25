@@ -96,6 +96,33 @@ class TestLogin:
             assert "admin" not in session
 
 
+class TestLoginFromTheMenu:
+    """The login lives in the menu of every page, so it returns to the page it came from."""
+
+    def test_login_returns_to_the_page(self, client):
+        response = client.post("/auth", data={"admin_password": PASSWORD, "next": "/library?q=hoy"})
+
+        assert response.headers["Location"] == "/library?q=hoy"
+
+    def test_a_wrong_password_also_returns_to_the_page(self, client):
+        response = client.post("/auth", data={"admin_password": "wrong", "next": "/queue"})
+
+        assert response.headers["Location"] == "/queue"
+
+    @pytest.mark.parametrize(
+        "target", ["https://evil.example/", "//evil.example/", "/\\evil.example", ""]
+    )
+    def test_never_returns_to_another_site(self, client, target):
+        response = client.post("/auth", data={"admin_password": PASSWORD, "next": target})
+
+        assert response.headers["Location"] == "/"
+
+    def test_logout_lands_on_home(self, client):
+        _login(client)
+
+        assert client.post("/logout").headers["Location"] == "/"
+
+
 class TestSetAdminPassword:
     def test_admin_can_change_it_and_stays_logged_in(self, client, auth):
         _login(client)

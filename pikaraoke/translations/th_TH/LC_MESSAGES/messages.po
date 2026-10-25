@@ -198,7 +198,7 @@ msgstr "คุณไม่ได้รับอนุญาตให้อัป
 # auto-translated
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
+msgid "Exiting Off the Record now!"
 msgstr "ออกจากพิคาราโอเกะแล้ว!"
 
 # auto-translated
@@ -598,8 +598,8 @@ msgstr "เพลง"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - เล่นประวัติ"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - เล่นประวัติ"
 
 # auto-translated
 #: routes/splash.py:24
@@ -1217,8 +1217,8 @@ msgstr "เข้าสู่ระบบ"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
-msgstr "ลืมมันเหรอ? รีสตาร์ท PiKaraoke ด้วย --admin-password เพื่อตั้งค่าใหม่"
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
+msgstr "ลืมมันเหรอ? รีสตาร์ท Off the Record ด้วย --admin-password เพื่อตั้งค่าใหม่"
 
 # auto-translated
 #. Title of the song library section.
@@ -1429,8 +1429,8 @@ msgstr "บน Linux / Raspberry Pi ให้ติดตั้งด้วย:"
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "และรีสตาร์ท PiKaraoke"
+msgid "and restart Off the Record."
+msgstr "และรีสตาร์ท Off the Record"
 
 # auto-translated
 #. Title text for the Score Phrases section of preferences
@@ -1617,8 +1617,8 @@ msgstr "ทำให้เซิร์ฟเวอร์ตื่นอยู่
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "ให้เซิร์ฟเวอร์ตื่นตัวในขณะที่ PiKaraoke กำลังทำงานอยู่"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "ให้เซิร์ฟเวอร์ตื่นตัวในขณะที่ Off the Record กำลังทำงานอยู่"
 
 # auto-translated
 #. Text for the link where the user can clear all user preferences
@@ -1665,7 +1665,7 @@ msgstr "เวอร์ชัน FFmpeg:"
 # auto-translated
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
+msgid "Off the Record version:"
 msgstr "เวอร์ชั่นปิคาราโอเกะ:"
 
 # auto-translated
@@ -1735,10 +1735,10 @@ msgstr "อัพเดต yt-dlp"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "* ลิงก์อัปเดตด้านบนนี้อาจล้มเหลวหากคุณไม่มีสิทธิ์อนุญาตไฟล์ที่เหมาะสม\n"
-"\t\t\t\t\t\t\tตรวจสอบบันทึก pikaraoke เพื่อดูข้อผิดพลาด"
+"\t\t\t\t\t\t\tตรวจสอบบันทึก Off the Record เพื่อดูข้อผิดพลาด"
 
 # auto-translated
 #. Title of the updates section.
@@ -1758,11 +1758,11 @@ msgstr "ขยายระบบไฟล์ Raspberry Pi"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
-"หากคุณเพิ่งติดตั้งอิมเมจ pikaraoke pi ที่สร้างไว้ล่วงหน้าและการ์ด SD ของคุณมีขนาดใหญ่กว่า 4GB\n"
+"หากคุณเพิ่งติดตั้งอิมเมจ Off the Record pi ที่สร้างไว้ล่วงหน้าและการ์ด SD ของคุณมีขนาดใหญ่กว่า 4GB\n"
 "\t\t\t\t\t\t\tคุณอาจต้องการขยายระบบไฟล์เพื่อใช้พื้นที่ที่เหลืออยู่ คุณต้องทำสิ่งนี้เพียงครั้งเดียว\n"
 "\t\t\t\t\t\t\tนี่จะเป็นการรีบูตระบบ"
 
@@ -1824,7 +1824,7 @@ msgstr ""
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
+msgid "Quit Off the Record"
 msgstr "เลิกปิ๊กคาราโอเกะ"
 
 # auto-translated
@@ -2389,7 +2389,7 @@ msgstr "คะแนนของคุณ"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""

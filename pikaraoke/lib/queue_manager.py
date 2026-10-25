@@ -39,6 +39,8 @@ class QueueManager:
         self._filename_from_path = filename_from_path
         self._get_available_songs = get_available_songs
         self._get_turns_taken = get_turns_taken
+        # Replaced by the AI service: a song still having its vocals removed waits.
+        self.is_ready: Callable[[str], bool] = lambda _song_path: True
 
     def is_song_in_queue(self, song_path: str) -> bool:
         """Check if a song is already in the queue."""
@@ -270,19 +272,33 @@ class QueueManager:
             return False
         return self.reorder(index, len(self.queue) - 1)
 
+    def next_ready_index(self) -> int | None:
+        """Position of the first song that can play now, or None if every song must wait."""
+        return next((i for i, item in enumerate(self.queue) if self.is_ready(item["file"])), None)
+
     def pop_next(self) -> dict[str, Any] | None:
-        """Remove and return the next song from the queue.
+        """Remove and return the next song that is ready to play.
 
-        Does not emit queue_update to avoid UI flicker during song transitions.
-        The playback system emits now_playing events which trigger queue UI updates.
+        A song still being prepared keeps its place at the head and the next ready
+        one plays ahead of it. Does not emit queue_update to avoid UI flicker during
+        song transitions; the playback system emits now_playing events which trigger
+        queue UI updates.
 
-        Returns None if queue is empty.
+        Returns None if no queued song is ready.
         """
-        if not self.queue:
+        index = self.next_ready_index()
+        if index is None:
             return None
 
-        song = self.queue.pop(0)
+        song = self.queue.pop(index)
         logging.info(f"Popped song from queue: {song['title']}")
+        if index > 0:
+            waiting = self.queue[0]["title"]
+            self._events.emit(
+                "notification",
+                _("%s is still being prepared; %s goes first") % (waiting, song["title"]),
+                "warning",
+            )
         return song
 
     def set_song_semitones(self, song_path: str, semitones: int) -> bool:

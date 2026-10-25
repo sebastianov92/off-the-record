@@ -190,7 +190,7 @@ msgstr "您无权更新 yt-dlp"
 
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
+msgid "Exiting Off the Record now!"
 msgstr "退出卡拉OK派"
 
 # auto-translated
@@ -581,8 +581,8 @@ msgstr "歌曲"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - 播放历史"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - 播放历史"
 
 # auto-translated
 #: routes/splash.py:24
@@ -1162,8 +1162,8 @@ msgstr "登录"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
-msgstr "忘记了？使用 --admin-password 重新启动 PiKaraoke 以设置新密码。"
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
+msgstr "忘记了？使用 --admin-password 重新启动 Off the Record 以设置新密码。"
 
 # auto-translated
 #. Title of the song library section.
@@ -1371,8 +1371,8 @@ msgstr "在 Linux / Raspberry Pi 上，安装它："
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "并重新启动 PiKaraoke。"
+msgid "and restart Off the Record."
+msgstr "并重新启动 Off the Record。"
 
 # auto-translated
 #. Title text for the Score Phrases section of preferences
@@ -1543,8 +1543,8 @@ msgstr "保持服务器唤醒：此平台不支持。"
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "PiKaraoke 运行时保持服务器处于唤醒状态"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Off the Record 运行时保持服务器处于唤醒状态"
 
 # auto-translated
 #. Text for the link where the user can clear all user preferences
@@ -1587,7 +1587,7 @@ msgstr "FFmpeg 版本："
 
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
+msgid "Off the Record version:"
 msgstr "卡拉OK派 版本:"
 
 #. Header of the information section about the System stats.
@@ -1652,7 +1652,7 @@ msgstr "更新 yt-dlp"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "以上的链接有可能失败，如果你没有相应的权限的话.\n"
 "    查看卡拉OK派的错误日志以检查错误"
@@ -1672,7 +1672,7 @@ msgstr "拓展Raspberry Pi文件系统"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
@@ -1731,7 +1731,7 @@ msgstr "不要只是拔掉插头！始终正确关闭服务器以避免数据损
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
+msgid "Quit Off the Record"
 msgstr "退出卡拉OK派"
 
 #. Text for button which reboots the machine running Pikaraoke.
@@ -2278,7 +2278,7 @@ msgstr "你的分数"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""

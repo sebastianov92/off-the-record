@@ -131,6 +131,9 @@ class ITunesProvider:
             "year": year,
             "genre": item.get("primaryGenreName", ""),
             "source": "itunes",
+            "artist_id": item.get("artistId"),
+            "album": item.get("collectionName", ""),
+            "artwork": item.get("artworkUrl100", ""),
         }
 
     def search(self, query: str, limit: int = 5, max_retries: int = 0) -> list[dict]:

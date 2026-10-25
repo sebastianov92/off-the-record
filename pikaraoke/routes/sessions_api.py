@@ -8,7 +8,6 @@ from flask import Response, jsonify
 from flask_smorest import Blueprint
 from marshmallow import Schema, ValidationError, fields, validate, validates_schema
 
-from pikaraoke.lib.auth import public
 from pikaraoke.lib.current_app import get_karaoke_instance
 from pikaraoke.lib.play_history_manager import RESET_SCOPES, SESSION_NAME_MAX_LENGTH
 
@@ -156,10 +155,8 @@ def get_singers(query):
     return jsonify({"singers": singers})
 
 
-# The one thing here the whole room may read: a guest looks up what they sang
-# last time and queues it again.
+# Host-only like the play log page, its one reader.
 @sessions_api_bp.route("/api/history/plays")
-@public
 @sessions_api_bp.arguments(PlaysQuery, location="query")
 def get_plays(query):
     """Paginated play log, newest first, optionally scoped to one session."""
@@ -296,7 +293,7 @@ def _export_csv(session_uuid: str, plays: list[dict]) -> Response:
 
 def _export_txt(session_uuid: str, plays: list[dict]) -> Response:
     """Render plays as a numbered, human-readable list (the #213 request)."""
-    lines = [_("PiKaraoke - Play History"), ""]
+    lines = [_("Off the Record - Play History"), ""]
     for i, play in enumerate(plays, 1):
         # played_at is "YYYY-MM-DD HH:MM:SS"; minutes are enough for a set list.
         lines.append(f"{i}. {play['played_at'][:16]}  {play['performer']} - {play['song']}")

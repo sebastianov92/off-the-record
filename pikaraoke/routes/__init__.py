@@ -5,6 +5,8 @@ registered on the `Api` and nothing registered on the `Flask` app. Membership
 here is therefore the whole of what the API list means.
 """
 
+from pikaraoke.ai.routes import ai_bp
+from pikaraoke.catalog.routes import catalog_bp
 from pikaraoke.routes.admin import admin_bp
 from pikaraoke.routes.auth_api import auth_api_bp
 from pikaraoke.routes.background_music import background_music_bp
@@ -60,4 +62,6 @@ INTERNAL_BLUEPRINTS = [
     settings_bp,
     splash_bp,
     batch_song_renamer_bp,
+    ai_bp,
+    catalog_bp,
 ]

@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from queue import Queue
 from threading import Thread
@@ -100,6 +101,8 @@ class StreamManager:
         # FileResolver of the transcode currently in flight, so the start
         # watchdog can probe whether FFmpeg is still producing segments.
         self._current_fr: FileResolver | None = None
+        # Replaced by the AI service: the instrumental to play instead of a song's audio.
+        self.audio_source: Callable[[str], str | None] = lambda _file_path: None
 
     def _with_base_path(self, path: str) -> str:
         """Prefix relative app paths when PiKaraoke is mounted under a subpath."""
@@ -138,8 +141,9 @@ class StreamManager:
 
         logging.debug(f"Requires transcoding: {requires_transcoding}")
 
+        audio_override = self.audio_source(file_path)
         try:
-            fr = FileResolver(file_path, streaming_format)
+            fr = FileResolver(file_path, streaming_format, audio_override)
         except Exception as e:
             error_message = _("Error resolving file: %s") % str(e)
             logging.error(error_message)
@@ -155,7 +159,7 @@ class StreamManager:
                 stream_url_path = self._with_base_path(f"/stream/{fr.stream_uid}.mp4")
 
         if not requires_transcoding:
-            is_transcoding_complete = self._copy_file(file_path, fr.output_file)
+            is_transcoding_complete = self._copy_file(fr.file_path, fr.output_file)
             is_buffering_complete = True
         else:
             is_transcoding_complete, is_buffering_complete = self._transcode_file(

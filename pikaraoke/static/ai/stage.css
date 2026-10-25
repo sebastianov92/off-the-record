@@ -1,0 +1,357 @@
+/* AI stage on the splash screen: animated background and word-timed lyrics,
+   laid over the (audio-only) player inside #video-container. */
+.ai-stage {
+  --ink: #ffffff;
+  --sung: #ffffff;
+  --unsung: rgba(255, 255, 255, 0.42);
+  --dim: rgba(255, 255, 255, 0.34);
+  --dimmer: rgba(255, 255, 255, 0.2);
+  --glow: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.55));
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: #0b0b12;
+  color: var(--ink);
+  font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.ai-stage.ai-ink-dark {
+  --ink: #2a0b33;
+  --sung: #2a0b33;
+  --unsung: rgba(42, 11, 51, 0.42);
+  --dim: rgba(42, 11, 51, 0.36);
+  --dimmer: rgba(42, 11, 51, 0.2);
+  --glow: none;
+}
+.ai-stage[hidden] {
+  display: none;
+}
+.ai-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ai-lyrics {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2vh;
+  padding: 0 6vw;
+  text-align: center;
+}
+/* Glowing styles can cross right behind a line; a soft shade keeps it readable. */
+.ai-stage:not(.ai-ink-dark) .ai-lyrics {
+  background: radial-gradient(ellipse 60% 38% at 50% 50%, rgba(0, 0, 0, 0.5), transparent 75%);
+}
+.ai-line {
+  max-width: 1500px;
+  min-height: 1.15em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  text-wrap: balance;
+  filter: var(--glow);
+}
+.ai-prev {
+  font-size: 3.2vh;
+  color: var(--dimmer);
+}
+.ai-current {
+  font-size: 7.4vh;
+}
+.ai-next {
+  font-size: 4.6vh;
+  color: var(--dim);
+}
+.ai-next2 {
+  font-size: 3.4vh;
+  color: var(--dimmer);
+}
+.ai-enter {
+  animation: ai-rise 0.35s ease-out;
+}
+@keyframes ai-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.ai-w {
+  --p: 0%;
+  color: transparent;
+  background: linear-gradient(90deg, var(--sung) var(--p), var(--unsung) var(--p));
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding: 0 0.02em;
+}
+.ai-w.ai-sung {
+  --p: 100%;
+}
+.ai-countdown {
+  display: flex;
+  gap: 1.6vh;
+  height: 2vh;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ai-countdown.ai-on {
+  opacity: 1;
+}
+.ai-countdown i {
+  width: 1.6vh;
+  height: 1.6vh;
+  border-radius: 50%;
+  background: var(--ink);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.ai-countdown i.ai-off {
+  opacity: 0.15;
+  transform: scale(0.7);
+}
+
+/* The idle screen's gradient (splash.js), level with the background video it
+   replaces: under the logo and the now-playing text, under a song's player. */
+.ai-idle {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+/* The singer, big enough to read from the sofa, in the corner away from the QR
+   code; it breathes while the face (avatars.js) follows the singing. */
+.ai-singer {
+  position: absolute;
+  right: 4vw;
+  /* Clear of the "Up next" lines in the bottom corner. */
+  bottom: 14vh;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 1vh;
+  /* The breath is on the whole singer, so the face keeps its own pop on a change. */
+  animation: ai-breathe 3.6s ease-in-out infinite;
+}
+.ai-singer[hidden] {
+  display: none;
+}
+.ai-singer-face {
+  width: 26vh;
+  height: 26vh;
+  filter: drop-shadow(0 1.2vh 2.4vh rgba(0, 0, 0, 0.35));
+}
+.ai-singer-name {
+  font-size: 2.6vh;
+  font-weight: 700;
+  color: var(--ink);
+  max-width: 30vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@keyframes ai-breathe {
+  50% {
+    transform: translateY(-0.8vh) scale(1.02);
+  }
+}
+/* The score screen (score.css, splash.html) is Off the Record's room: a warm
+   lounge with a microphone stand waiting. A shade keeps the score readable over it,
+   and the singer stands on the floor beside the mic, wearing their score's face. */
+#score {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.12) 45%, rgba(0, 0, 0, 0.5)),
+    url("../brand/score-room.jpg");
+  background-size: cover;
+  background-position: center;
+}
+.score-logo {
+  position: absolute;
+  top: 4vh;
+  left: 50%;
+  height: 9vh;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0.4vh 1vh rgba(0, 0, 0, 0.5));
+}
+.ai-score-avatar {
+  position: absolute;
+  z-index: 1;
+  left: 70vw;
+  bottom: 19vh;
+  width: 30vh;
+  height: 30vh;
+  filter: drop-shadow(0 1.6vh 1.6vh rgba(0, 0, 0, 0.45));
+}
+.ai-score-avatar:empty {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-singer {
+    animation: none;
+  }
+}
+
+/* Dancing to the beat (splash.js sets the variables on each beat): the face sways,
+   leans and moves its eyes with a spring that overshoots a little, and the body
+   lands squashed, jumps and comes down again by the next beat. */
+.ai-singer-face {
+  transform: translate(var(--sway-x, 0), var(--sway-y, 0)) rotate(var(--tilt, 0deg));
+  transition: transform var(--move, 0.25s) cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.ai-singer-face .avatar-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: translate(calc(var(--look-x, 0) * 1px), calc(var(--look-y, 0) * 1px));
+  transition: transform 0.14s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
+.ai-singer-face.blink .avatar-eyes {
+  transform: translate(calc(var(--look-x, 0) * 1px), calc(var(--look-y, 0) * 1px)) scaleY(0.1);
+  transition-duration: 0.06s;
+}
+.ai-singer-face > svg {
+  transform-origin: 50% 100%;
+}
+.ai-singer-face.beat > svg {
+  animation: ai-hop var(--beat, 0.4s) ease-out;
+}
+.ai-singer-face.spin > svg {
+  transform-origin: 50% 55%;
+  animation: ai-spin 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes ai-hop {
+  0% {
+    transform: translateY(0) scale(calc(1 + var(--squash, 0.15)), calc(1 - var(--squash, 0.15)));
+  }
+  35% {
+    transform: translateY(var(--hop, 0%))
+      scale(calc(1 - var(--squash, 0.15) * 0.4), calc(1 + var(--squash, 0.15) * 0.6));
+  }
+  70% {
+    transform: translateY(0) scale(calc(1 + var(--squash, 0.15) * 0.3), calc(1 - var(--squash, 0.15) * 0.3));
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+@keyframes ai-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-singer-face,
+  .ai-singer-face .avatar-eyes {
+    transform: none;
+    transition: none;
+  }
+  .ai-singer-face.beat > svg,
+  .ai-singer-face.spin > svg {
+    animation: none;
+  }
+}
+
+/* While the avatar shows the singer, the corner keeps the song and its time only. */
+body.ai-stage-on #now-playing .icon-mic-1,
+body.ai-stage-on #now-playing-singer,
+body.ai-stage-on #now-playing .has-text-success > br {
+  display: none;
+}
+
+/* The score screen: no beat left to follow, so the singer celebrates the way the
+   score earned (score.js sets the face): jumps for a high one, a happy sway, a
+   slow shy rock with the eyes down for a low one. The eyes glance about meanwhile. */
+.ai-score-avatar > svg {
+  transform-origin: 50% 100%;
+  animation: ai-score-breathe 2.4s ease-in-out infinite;
+}
+.ai-score-avatar[data-avatar-face="love"] > svg,
+.ai-score-avatar[data-avatar-face="smug"] > svg {
+  animation:
+    ai-score-spin 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    ai-score-jump 0.62s ease-out 0.7s infinite;
+}
+.ai-score-avatar[data-avatar-face="happy"] > svg {
+  animation: ai-score-sway 0.9s ease-in-out infinite;
+}
+.ai-score-avatar[data-avatar-face="shy"] > svg {
+  animation: ai-score-rock 2.2s ease-in-out infinite;
+}
+.ai-score-avatar .avatar-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ai-score-glance 2.6s ease-in-out infinite;
+}
+.ai-score-avatar[data-avatar-face="shy"] .avatar-eyes {
+  animation: none;
+  transform: translateY(5px);
+}
+@keyframes ai-score-breathe {
+  50% {
+    transform: translateY(-3%) scale(1.02);
+  }
+}
+@keyframes ai-score-jump {
+  0% {
+    transform: translateY(0) scale(1.14, 0.86);
+  }
+  35% {
+    transform: translateY(-26%) scale(0.94, 1.08);
+  }
+  70% {
+    transform: translateY(0) scale(1.06, 0.94);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+@keyframes ai-score-spin {
+  from {
+    transform: rotate(0deg) scale(0.6);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+@keyframes ai-score-sway {
+  0%,
+  100% {
+    transform: rotate(-9deg) translateX(-6%);
+  }
+  50% {
+    transform: rotate(9deg) translateX(6%) translateY(-6%);
+  }
+}
+@keyframes ai-score-rock {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+@keyframes ai-score-glance {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-6px, -2px);
+  }
+  60% {
+    transform: translate(6px, -2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-score-avatar > svg,
+  .ai-score-avatar .avatar-eyes {
+    animation: none;
+  }
+}

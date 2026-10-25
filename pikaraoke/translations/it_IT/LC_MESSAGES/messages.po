@@ -174,8 +174,8 @@ msgstr "Non hai l'autorizzazione per aggiornare yt-dlp"
 
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
-msgstr "Chiusura di Pikaraoke!"
+msgid "Exiting Off the Record now!"
+msgstr "Chiusura di Off the Record!"
 
 #. Message shown after trying to quit pikaraoke without admin permissions.
 #: routes/admin.py:109
@@ -559,8 +559,8 @@ msgstr "Canzone"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - Riproduci la cronologia"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - Riproduci la cronologia"
 
 #: routes/splash.py:24
 msgid "Never sing again... ever."
@@ -1142,9 +1142,9 @@ msgstr "Login"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
 msgstr ""
-"L'hai dimenticato? Riavvia PiKaraoke con --admin-password per impostarne una"
+"L'hai dimenticato? Riavvia Off the Record con --admin-password per impostarne una"
 " nuova."
 
 # auto-translated
@@ -1352,8 +1352,8 @@ msgstr "Su Linux/Raspberry Pi, installalo con:"
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "e riavvia PiKaraoke."
+msgid "and restart Off the Record."
+msgstr "e riavvia Off the Record."
 
 # auto-translated
 #. Title text for the Score Phrases section of preferences
@@ -1539,8 +1539,8 @@ msgstr "Mantieni il server attivo: non supportato su questa piattaforma."
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "Mantieni il server attivo mentre PiKaraoke è in esecuzione"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Mantieni il server attivo mentre Off the Record è in esecuzione"
 
 #. Text for the link where the user can clear all user preferences
 #: templates/info.html:744
@@ -1579,8 +1579,8 @@ msgstr "FFmpeg versione:"
 
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
-msgstr "Pikaraoke versione:"
+msgid "Off the Record version:"
+msgstr "Off the Record versione:"
 
 #. Header of the information section about the System stats.
 #: templates/info.html:777
@@ -1644,10 +1644,10 @@ msgstr "Aggiorna yt-dlp"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "Il link d'aggiornamento potrebbe non funzionare se non hai i permessi file adeguati.\n"
-" Controlla i log di pikaraoke per eventuali errori."
+" Controlla i log di Off the Record per eventuali errori."
 
 #. Title of the updates section.
 #: templates/info.html:827
@@ -1664,11 +1664,11 @@ msgstr "Espandi il file system del Raspberry Pi"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
-"Se hai appena installato l'immagine pre-costruita di pikaraoke pi e la tua scheda SD è più grande di 4 GB,\n"
+"Se hai appena installato l'immagine pre-costruita di Off the Record pi e la tua scheda SD è più grande di 4 GB,\n"
 " potresti voler espandere il file system per utilizzare lo spazio rimanente. Devi farlo solo una volta.\n"
 " Questo riavvierà il sistema."
 
@@ -1729,8 +1729,8 @@ msgstr ""
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
-msgstr "Esci da Pikaraoke"
+msgid "Quit Off the Record"
+msgstr "Esci da Off the Record"
 
 #. Text for button which reboots the machine running Pikaraoke.
 #: templates/info.html:911
@@ -2285,12 +2285,12 @@ msgstr "Il tuo punteggio"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""
 "A causa delle limitazioni con i permessi del browser, devi interagire\n"
-" con la pagina una volta prima che consenta la riproduzione automatica dei video. Pikaraoke non\n"
+" con la pagina una volta prima che consenta la riproduzione automatica dei video. Off the Record non\n"
 " verrà riprodotto in caso contrario. Fai clic sul pulsante in basso per\n"
 " <a onClick=\"handleConfirmation()\">conferma</a> ."
 

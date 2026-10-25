@@ -21,12 +21,14 @@ from flask_babel import Babel
 from flask_socketio import SocketIO
 
 from pikaraoke import VERSION, karaoke
+from pikaraoke.ai.service import AiService
+from pikaraoke.catalog.service import CatalogService
 from pikaraoke.constants import LANGUAGES
 from pikaraoke.lib.admin_auth import AdminAuth
 from pikaraoke.lib.args import parse_pikaraoke_args
 from pikaraoke.lib.auth import document_auth, install_auth_gate
 from pikaraoke.lib.browser import Browser
-from pikaraoke.lib.current_app import get_karaoke_instance, is_admin
+from pikaraoke.lib.current_app import get_admin_auth, get_karaoke_instance, is_admin
 from pikaraoke.lib.ffmpeg import is_ffmpeg_installed
 from pikaraoke.lib.file_resolver import delete_tmp_dir
 from pikaraoke.lib.get_platform import get_platform, has_js_runtime, is_windows
@@ -85,6 +87,9 @@ app.wsgi_app = BasePathMiddleware(app.wsgi_app, args.base_path)
 # because it does not exist yet at import time.
 app.jinja_env.globals.update(
     is_admin=is_admin,
+    # Not admin_password_set: the settings page passes a bool by that name, which
+    # would shadow this and break the menu on that page.
+    has_admin_password=lambda: get_admin_auth().is_password_set(),
     active_session_name=lambda: get_karaoke_instance().play_history.get_current_session_name(),
     has_active_session=lambda: get_karaoke_instance().play_history.has_active_session(),
 )
@@ -286,6 +291,14 @@ def main() -> None:
     with app.app_context():
         app.config["KARAOKE_INSTANCE"] = k
 
+    ai_service = AiService(k)
+    app.config["AI_SERVICE"] = ai_service
+    ai_service.start()
+
+    catalog_service = CatalogService(k)
+    app.config["CATALOG_SERVICE"] = catalog_service
+    catalog_service.start()
+
     # Wire download events to SocketIO broadcasts with app context
     from pikaraoke.lib.current_app import broadcast_event
 
@@ -315,7 +328,7 @@ def main() -> None:
         )
 
     # expose shared configuration variables to the flask app
-    app.config["SITE_NAME"] = "PiKaraoke"
+    app.config["SITE_NAME"] = "Off the Record"
 
     # Expose some functions to jinja templates. The session globals are bound at
     # import instead; these two need the Karaoke instance, which only exists here.

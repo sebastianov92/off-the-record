@@ -24,22 +24,22 @@
 		pikaWaiting = !np.now_playing && !!np.up_next && !np.autoplay;
 		pikaWaitingSong = np.up_next_file;
 		if (np.now_playing) {
-			var nowPlayingHtml = `<p class="mb-1">${np.now_playing}</p>
-          <p class="has-text-text mb-1"><i class="icon icon-mic-1" title="Current singer"></i>${np.now_playing_user}</p>`;
+			var nowPlayingHtml = `<p class="np-song">${np.now_playing}</p>
+          <p class="np-singer">${window.avatarTag(np.now_playing_user, "avatar home-avatar")}<span>${np.now_playing_user}</span></p>`;
 
 			if (np.now_playing_transpose != 0) {
 				nowPlayingHtml +=
 					// {# MSG: Label for display of how many semitones the song has been shifted. #}
-					"<span class='is-size-6 has-text-white'><b>Key</b>: " +
+					"<span class='np-key'><b>Key</b>: " +
 					getSemitonesLabel(np.now_playing_transpose) +
-					"<span>";
+					"</span>";
 			}
 
 			$("#now-playing").html(nowPlayingHtml);
 			$(".control-box").show();
 		} else {
 			// {# MSG: Message which shows in the "Now Playing" section when there is no song currently playing #}
-			$("#now-playing").html({{ _('Nothing is playing right now.') | tojson }});
+			$("#now-playing").empty().append($('<p class="np-empty">').text({{ _('Nothing is playing right now.') | tojson }}));
 			// A song waiting for a manual start keeps the control box up.
 			$(".control-box").toggle(pikaWaiting);
 		}
@@ -49,13 +49,11 @@
 		$(".playing_gif").toggle(!!np.now_playing);
 
 		if (np.up_next) {
-			$("#up-next").html(`<p class="mb-1">${np.up_next}</p>
-          <p class="has-text-text">
-            {# MSG: Title text for the icon marking the next person to sing. #}
-            <i class="icon icon-mic-1" title="{{ _('Next singer') | forceescape }}"></i>${np.next_user}</p>`);
+			$("#up-next").html(`<p class="np-song">${np.up_next}</p>
+          <p class="np-singer">${window.avatarTag(np.next_user, "avatar home-avatar")}<span>${np.next_user}</span></p>`);
 		} else {
 			// {# MSG: Alternative text for the "Up next" section if no more songs are queued up. #}
-			$("#up-next").html({{ _('No song is queued.') | tojson }});
+			$("#up-next").empty().append($('<p class="np-empty">').text({{ _('No song is queued.') | tojson }}));
 		}
 
 		// While waiting, the slider reflects and sets the upcoming song's key.
@@ -68,6 +66,14 @@
 			volume = np.volume;
 			console.log("setting volume to " + volume);
 			$("#volume-slider").val(volume);
+		}
+
+		// The karaoke stage controls only exist for songs the AI worker processed.
+		$(".ai-only").toggleClass("is-hidden", !np.now_playing_ai);
+		if (np.now_playing_ai) {
+			$("#ai-guide-slider").val(np.now_playing_ai.guide_volume);
+			var offset = np.now_playing_ai.lyrics_offset || 0;
+			$("#ai-offset").text((offset > 0 ? "+" : "") + offset.toFixed(1) + " s");
 		}
 
 		// Not playing (paused or a song waiting to start): the button plays
@@ -104,6 +110,20 @@
 			}, 500)
 		);
 
+		$("#ai-guide-slider").on(
+			"input",
+			debounce(function () {
+				$.post(window.pikaraokeConfig.basePath + "/api/ai/guide_volume", { volume: this.value });
+			}, 300)
+		);
+		window.onPageSocket("ai_guide_volume", (data) => $("#ai-guide-slider").val(data.volume));
+		$("#ai-background").click(function () {
+			$.post(window.pikaraokeConfig.basePath + "/api/ai/background");
+		});
+		$(".ai-nudge").click(function () {
+			$.post(window.pikaraokeConfig.basePath + "/api/ai/lyrics_offset", { delta: $(this).data("delta") });
+		});
+
 		$("#submit-transpose").click(function () {
 			var value = slider ? slider.value : 0;
 			if (pikaWaiting) {
@@ -120,7 +140,7 @@
 			output.innerHTML = getSemitonesLabel(slider.value);
 		});
 
-		$("#pause-resume").click(function () {
+		$("#pause-button").click(function () {
 			if (pikaWaiting) {
 				// Apply the slider's key to the waiting song, then start it, so the
 				// one transcode runs in the chosen key.
@@ -145,21 +165,32 @@
 			$.post(window.pikaraokeConfig.basePath + "/api/vol_down");
 		});
 
-		$("#restart").click(function () {
-			r = confirm(window.translations.confirmRestartTrack);
-			if (r) {
-				$.post(window.pikaraokeConfig.basePath + "/api/restart");
+		// Restart and skip act on a second tap: the first swaps the icon for a question,
+		// so a stray touch never cuts a song and no dialog covers the screen.
+		function confirmTap(button, action) {
+			var $b = $(button);
+			if ($b.hasClass("is-confirming")) {
+				clearTimeout($b.data("timer"));
+				$b.removeClass("is-confirming").html($b.data("icon"));
+				action();
+				return;
 			}
+			$b.data("icon", $b.html()).addClass("is-confirming").text($b.data("confirm"));
+			$b.data("timer", setTimeout(function () {
+				$b.removeClass("is-confirming").html($b.data("icon"));
+			}, 3000));
+		}
+
+		$("#restart").click(function () {
+			confirmTap(this, function () {
+				$.post(window.pikaraokeConfig.basePath + "/api/restart");
+			});
 		});
 
 		$("#skip").click(function () {
-			r = confirm(
-				// {# MSG: Confirmation message when clicking a button to skip a track. #}
-				{{ _("Are you sure you want to skip this track? If you didn't add this song, ask permission first!") | tojson }}
-			);
-			if (r) {
+			confirmTap(this, function () {
 				$.post(window.pikaraokeConfig.basePath + "/api/skip");
-			}
+			});
 		});
 
 		$("#semitones-info").click(function () {
@@ -208,12 +239,12 @@
 			enabled.forEach(function(dev) {
 				var escaped = $('<span>').text(dev.label).html();
 				list.append(
-					'<div class="is-flex is-align-items-center mb-1">' +
-						'<i class="icon icon-mic-1 mr-1"></i>' +
-						'<span class="is-size-7 mr-2 is-truncated" style="min-width: 80px;">' + escaped + '</span>' +
+					'<div class="home-row">' +
+						'<span class="home-row-label is-truncated">' + escaped + '</span>' +
+						'<div class="home-slider"><i class="icon icon-mic-1"></i>' +
 						'<input type="range" min="0" max="1" step="0.05" value="' + dev.volume + '" ' +
-							'class="mic-live-volume" data-device-id="' + dev.deviceId + '" data-label="' + escaped + '" ' +
-							'style="width: 100px;" />' +
+							'class="mic-live-volume" data-device-id="' + dev.deviceId + '" data-label="' + escaped + '" />' +
+						'</div>' +
 					'</div>'
 				);
 			});
@@ -259,79 +290,92 @@
 />{% endblock %}
 
 {% block content %}
-
-<p class="is-size-4 has-text-warning mb-6" id="now-playing">&nbsp;</p>
-
-<h3>{# MSG: Title for the section displaying the next song to be played. #} {% trans %}Next Song{% endtrans %}</h3>
-<p id="up-next" class="has-text-warning mb-6"></p>
-
-{% if admin %}
-<div class="has-background-dark box control-box" style="max-width: 500px; display: none">
-	{# MSG: Title of the box with controls such as pause and skip. #}
-	<h4>{% trans %}Player Control{% endtrans %}</h4>
-	<div class="is-size-3 is-flex is-justify-content-space-between">
-		<div class="is-size-3">
+{# The song on now and its transport first, then what is next, then the controls
+   grouped by what they change. The mini player hides here (skin.css): this page
+   is the full remote. #}
+<div id="home-player" class="home-player">
+	<section class="home-card home-now">
+		<div id="now-playing">&nbsp;</div>
+		{% if admin %}
+		<div class="home-transport control-box" style="display: none">
 			{# MSG: Title attribute on the button to restart the current song. #}
-			<a title="{{ _('Restart Song') }}" id="restart"><i class="icon icon-to-start"></i> </a>&nbsp;&nbsp; {# MSG:
-			Title attribute on the button to play or pause the current song. #}
-			<a title="{{ _('Play/Pause') }}"><i id="pause-resume" class="icon icon-pause"></i> </a>&nbsp;&nbsp; {# MSG:
-			Title attribute on the button to skip to the next song. #}
-			<a title="{{ _('Stop Current Song') }}" id="skip"><i class="icon icon-to-end"></i> </a>
+			<button id="restart" class="home-transport-button" title="{{ _('Restart Song') }}"
+				aria-label="{{ _('Restart Song') }}" data-confirm="{{ _('Restart?') }}"><i class="icon icon-to-start"></i></button>
+			{# MSG: Title attribute on the button to play or pause the current song. #}
+			<button id="pause-button" class="home-transport-button is-main" title="{{ _('Play/Pause') }}"
+				aria-label="{{ _('Play/Pause') }}"><i id="pause-resume" class="icon icon-pause"></i></button>
+			{# MSG: Title attribute on the button to skip to the next song. #}
+			<button id="skip" class="home-transport-button" title="{{ _('Stop Current Song') }}"
+				aria-label="{{ _('Stop Current Song') }}" data-confirm="{{ _('Skip?') }}"><i class="icon icon-to-end"></i></button>
 		</div>
-		<div class="is-size-3 is-flex is-align-items-center">
-			<i id="vol-down" class="icon icon-volume-down"></i>
-			<input
-				type="range"
-				min="0"
-				max="1"
-				value="{{ volume|default(0.85) }}"
-				step="0.025"
-				id="volume-slider"
-				style="margin: 0 8px 0px 5px; width: 100px"
-			/>
-			<i id="vol-up" class="icon icon-volume-up"></i>
+		{% endif %}
+	</section>
+
+	<section class="home-card">
+		{# MSG: Title for the section displaying the next song to be played. #}
+		<h3 class="home-label">{% trans %}Next Song{% endtrans %}</h3>
+		<div id="up-next"></div>
+	</section>
+
+	{% if admin %}
+	<section class="home-card control-box" style="display: none">
+		<h3 class="home-label">{% trans %}Volumes{% endtrans %}</h3>
+		<div class="home-row">
+			<span class="home-row-label">{% trans %}Music{% endtrans %}</span>
+			<div class="home-slider">
+				<i id="vol-down" class="icon icon-volume-down"></i>
+				<input type="range" min="0" max="1" value="{{ volume|default(0.85) }}" step="0.025" id="volume-slider" />
+				<i id="vol-up" class="icon icon-volume-up"></i>
+			</div>
 		</div>
-	</div>
-	<hr />
+		<div class="home-row ai-only is-hidden">
+			{# MSG: Label of the slider that mixes the original singer's voice under the instrumental. #}
+			<span class="home-row-label">{% trans %}Vocal guide{% endtrans %}</span>
+			<div class="home-slider">
+				<i class="icon icon-mic-1"></i>
+				<input type="range" min="0" max="100" step="5" value="0" id="ai-guide-slider" />
+			</div>
+		</div>
+		{% if mic_available %}
+		<div id="mic-live-panel" style="display: none">
+			<div id="mic-live-list"></div>
+		</div>
+		{% endif %}
+	</section>
+
+	<section class="home-card control-box ai-only is-hidden" style="display: none">
+		{# MSG: Title of the controls for the lyrics screen on the TV. #}
+		<h3 class="home-label">{% trans %}Karaoke screen{% endtrans %}</h3>
+		<div class="home-row">
+			{# MSG: Label of the buttons that move the on-screen lyrics earlier or later. #}
+			<span class="home-row-label">{% trans %}Lyrics timing{% endtrans %}</span>
+			<div class="home-stepper">
+				<button class="button ai-nudge" data-delta="-0.1" aria-label="-0.1 s">-</button>
+				<span id="ai-offset">0.0 s</span>
+				<button class="button ai-nudge" data-delta="0.1" aria-label="+0.1 s">+</button>
+			</div>
+		</div>
+		{# MSG: Button that gives the karaoke screen a different animated background. #}
+		<button id="ai-background" class="button home-wide">{% trans %}Another background{% endtrans %}</button>
+	</section>
 
 	{% if is_transpose_enabled %}
-	<div class="is-flex is-justify-content-space-between">
-		<div>
+	<section class="home-card control-box" style="display: none">
+		<div class="home-key-head">
 			{# MSG: Title of a control to change the key/pitch of the playing song. #}
-			<h4>{% trans %}Change Key{% endtrans %}</h4>
+			<h3 class="home-label">{% trans %}Change Key{% endtrans %}</h3>
+			<span id="semitones-label"></span>
+			<a id="semitones-info" role="button" aria-label="Info"><i class="icon icon-info-circled-1"></i></a>
 		</div>
-		<div class="is-flex">
-			<h4 id="semitones-label"></h4>
-			<a id="semitones-info"> <i class="icon icon-info-circled-1" title="Info"></i></a>
+		<div class="home-slider">
+			<input type="range" min="-12" max="12" value="0" class="transpose-slider" id="transpose" />
+			<button id="submit-transpose" class="button">
+				{# MSG: Label on the button to confirm the change in key/pitch of the playing song. #}
+				{% trans %}Change{% endtrans %}
+			</button>
 		</div>
-	</div>
-	<div class="is-flex">
-		<input
-			type="range"
-			min="-12"
-			max="12"
-			value="0"
-			width="300px"
-			class="transpose-slider"
-			id="transpose"
-			style="width: 100%"
-		/>
-		<button id="submit-transpose" class="button is-small" style="margin-left: 10px">
-			{# MSG: Label on the button to confirm the change in key/pitch of the playing song. #} {% trans %}Change{%
-			endtrans %}
-		</button>
-	</div>
+	</section>
 	{% endif %}
-
-	{% if mic_available %}
-	<div id="mic-live-panel" style="display: none">
-		<hr />
-		<h4><i class="icon icon-mic-1"></i> {% trans %}Microphones{% endtrans %}</h4>
-		<div id="mic-live-list"></div>
-	</div>
 	{% endif %}
 </div>
-{% endif %}
-
-<div></div>
 {% endblock %}

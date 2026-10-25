@@ -227,6 +227,7 @@ class DownloadManager:
             enqueue=entry["enqueue"],
             user=entry["user"],
             title=entry["title"],
+            audio_only=entry.get("audio_only", False),
         )
         return True
 
@@ -236,6 +237,7 @@ class DownloadManager:
         enqueue: bool = False,
         user: str = "Pikaraoke",
         title: str | None = None,
+        audio_only: bool = False,
     ) -> None:
         """Queue a video for download.
 
@@ -246,6 +248,7 @@ class DownloadManager:
             enqueue: Whether to add to playback queue after download.
             user: Username to attribute the download to.
             title: Display title (defaults to URL if not provided).
+            audio_only: Keep only the sound (an original song for the AI worker).
         """
         from flask_babel import _
 
@@ -279,6 +282,7 @@ class DownloadManager:
             "title": title,
             "display_title": displayed_title,
             "attempts": 0,
+            "audio_only": audio_only,
         }
 
         # Add to the download queue and shadow list
@@ -468,6 +472,7 @@ class DownloadManager:
             self._preferences.get_or_default("high_quality"),
             self._youtubedl_proxy,
             self._additional_ytdl_args,
+            audio_only=request.get("audio_only", False),
         )
         logging.debug("yt-dlp command: " + " ".join(cmd))
 
@@ -495,6 +500,7 @@ class DownloadManager:
                     "url": video_url,
                     "user": user,
                     "enqueue": enqueue,
+                    "audio_only": request.get("audio_only", False),
                     "error": _summarise_ytdl_failure(output),
                 }
             )

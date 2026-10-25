@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='ai/processing.js') }}"></script>
+<script>
+	$(function () {
+		aiProcessing({
+			admin: {{ 'true' if admin else 'false' }},
+			base: window.pikaraokeConfig.basePath,
+			labels: {
+				stages: {
+					separating: {{ _('Removing the vocals')|tojson }},
+					saving: {{ _('Saving the tracks')|tojson }},
+					language: {{ _('Detecting the language')|tojson }},
+					transcribing: {{ _('Writing down the lyrics')|tojson }},
+					writing: {{ _('Timing every word')|tojson }},
+				},
+				elapsed: {{ _('Elapsed')|tojson }},
+				remaining: {{ _('About %(time)s left', time='{time}')|tojson }},
+				starting: {{ _('Starting...')|tojson }},
+				position: {{ _('#%(n)s in line', n='{n}')|tojson }},
+				took: {{ _('Took %(time)s', time='{time}')|tojson }},
+				lines: {{ _('%(n)s lines', n='{n}')|tojson }},
+				realLyrics: {{ _('Real lyrics (%(n)s%% heard)', n='{n}')|tojson }},
+				heardLyrics: {{ _('Lyrics as heard')|tojson }},
+				ready: {{ _('Karaoke ready')|tojson }},
+				no_vocals: {{ _('No vocals')|tojson }},
+				error: {{ _('Error')|tojson }},
+				retry: {{ _('Process again')|tojson }},
+				nothingNow: {{ _('Nothing is being converted right now.')|tojson }},
+				nowHint: {{ _('Songs you add from search or upload are converted here, one at a time.')|tojson }},
+				nothingQueued: {{ _('No songs waiting.')|tojson }},
+				nothingDone: {{ _('No conversions yet.')|tojson }},
+				disabled: {{ _('AI features are not installed')|tojson }},
+			},
+		});
+	});
+</script>
+{% endblock %}
+
+{% block content %}
+<div id="processing-page">
+	<p id="processing-disabled" class="notification is-warning is-light" hidden></p>
+
+	{# MSG: Heading of the song whose vocals and lyrics are being made right now. #}
+	<h2 class="title is-5">{% trans %}Converting now{% endtrans %}</h2>
+	<div id="processing-now" class="mb-5"></div>
+
+	{# MSG: Heading of the songs waiting to be converted into karaoke. #}
+	<h2 class="title is-5">{% trans %}Waiting{% endtrans %}</h2>
+	<div id="processing-queue" class="mb-5"></div>
+
+	{# MSG: Heading of the songs whose conversion has finished. #}
+	<h2 class="title is-5">{% trans %}Finished{% endtrans %}</h2>
+	<div id="processing-done"></div>
+</div>
+{% endblock %}

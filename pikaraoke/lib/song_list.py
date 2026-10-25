@@ -27,7 +27,7 @@ class SongList:
     """
 
     # Supported song file extensions
-    VALID_EXTENSIONS = {".mp4", ".mp3", ".zip", ".mkv", ".avi", ".webm", ".mov"}
+    VALID_EXTENSIONS = {".mp4", ".mp3", ".zip", ".mkv", ".avi", ".webm", ".mov", ".m4a"}
 
     def __init__(self, sort_key=None):
         """Initialize an empty SongList.

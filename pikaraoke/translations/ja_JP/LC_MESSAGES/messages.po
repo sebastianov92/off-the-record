@@ -198,7 +198,7 @@ msgstr "yt-dlp を更新する権限がありません"
 # auto-translated
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
+msgid "Exiting Off the Record now!"
 msgstr "ピカカラオケを終了します!"
 
 # auto-translated
@@ -596,8 +596,8 @@ msgstr "歌"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - プレイ履歴"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - プレイ履歴"
 
 # auto-translated
 #: routes/splash.py:24
@@ -1204,8 +1204,8 @@ msgstr "ログイン"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
-msgstr "忘れてしまいましたか？ --admin-password を使用して PiKaraoke を再起動し、新しいパスワードを設定します。"
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
+msgstr "忘れてしまいましたか？ --admin-password を使用して Off the Record を再起動し、新しいパスワードを設定します。"
 
 # auto-translated
 #. Title of the song library section.
@@ -1413,8 +1413,8 @@ msgstr "Linux / Raspberry Pi では、次のようにインストールします
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "そしてPiKaraokeを再起動してください。"
+msgid "and restart Off the Record."
+msgstr "そしてOff the Recordを再起動してください。"
 
 # auto-translated
 #. Title text for the Score Phrases section of preferences
@@ -1585,8 +1585,8 @@ msgstr "サーバーを起動したままにします: このプラットフォ�
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "PiKaraoke の実行中はサーバーを起動したままにします"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Off the Record の実行中はサーバーを起動したままにします"
 
 # auto-translated
 #. Text for the link where the user can clear all user preferences
@@ -1633,7 +1633,7 @@ msgstr "FFmpegのバージョン:"
 # auto-translated
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
+msgid "Off the Record version:"
 msgstr "ピカオケバージョン："
 
 # auto-translated
@@ -1703,7 +1703,7 @@ msgstr "yt-dlp を更新する"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "* 適切なファイル権限がない場合、上記の更新リンクは失敗する可能性があります。\n"
 "\t\t\t\t\t\t\tピカロケのログでエラーを確認してください。"
@@ -1726,11 +1726,11 @@ msgstr "Raspberry Pi ファイルシステムを拡張する"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
-"事前に構築された pikaraoke pi イメージをインストールしたばかりで、SD カードの容量が 4GB を超えている場合は、\n"
+"事前に構築された Off the Record pi イメージをインストールしたばかりで、SD カードの容量が 4GB を超えている場合は、\n"
 "\t\t\t\t\t\t\t残りのスペースを利用するためにファイルシステムを拡張することもできます。これを行う必要があるのは 1 回だけです。\n"
 "\t\t\t\t\t\t\tこれによりシステムが再起動されます。"
 
@@ -1787,7 +1787,7 @@ msgstr "ただプラグを抜くのはやめてください！データの破損
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
+msgid "Quit Off the Record"
 msgstr "ピカカラオケをやめる"
 
 # auto-translated
@@ -2348,7 +2348,7 @@ msgstr "あなたのスコア"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""

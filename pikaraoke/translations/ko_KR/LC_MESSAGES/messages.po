@@ -198,7 +198,7 @@ msgstr "yt-dlp을 업데이트할 권한이 없습니다."
 # auto-translated
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
+msgid "Exiting Off the Record now!"
 msgstr "피카라오케를 종료합니다!"
 
 # auto-translated
@@ -596,8 +596,8 @@ msgstr "노래"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - 플레이 기록"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - 플레이 기록"
 
 # auto-translated
 #: routes/splash.py:24
@@ -1204,8 +1204,8 @@ msgstr "로그인"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
-msgstr "잊어버리셨나요? --admin-password를 사용하여 PiKaraoke를 다시 시작하여 새로운 비밀번호를 설정하세요."
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
+msgstr "잊어버리셨나요? --admin-password를 사용하여 Off the Record를 다시 시작하여 새로운 비밀번호를 설정하세요."
 
 # auto-translated
 #. Title of the song library section.
@@ -1413,8 +1413,8 @@ msgstr "Linux/Raspberry Pi에서는 다음을 사용하여 설치합니다."
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "PiKaraoke를 다시 시작하세요."
+msgid "and restart Off the Record."
+msgstr "Off the Record를 다시 시작하세요."
 
 # auto-translated
 #. Title text for the Score Phrases section of preferences
@@ -1585,8 +1585,8 @@ msgstr "서버를 깨우세요: 이 플랫폼에서는 지원되지 않습니다
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "PiKaraoke가 실행되는 동안 서버를 깨워두세요"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Off the Record가 실행되는 동안 서버를 깨워두세요"
 
 # auto-translated
 #. Text for the link where the user can clear all user preferences
@@ -1633,7 +1633,7 @@ msgstr "FFmpeg 버전:"
 # auto-translated
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
+msgid "Off the Record version:"
 msgstr "피카라오케 버전:"
 
 # auto-translated
@@ -1703,7 +1703,7 @@ msgstr "yt-dlp 업데이트"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "* 위의 업데이트 링크는 적절한 파일 권한이 없을 경우 실패할 수 있습니다.\n"
 "\t\t\t\t\t\t\t피노래방 로그에서 오류를 확인하세요."
@@ -1726,7 +1726,7 @@ msgstr "Raspberry Pi 파일 시스템 확장"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
@@ -1787,7 +1787,7 @@ msgstr "플러그만 뽑지 마세요! 데이터 손상을 방지하려면 항�
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
+msgid "Quit Off the Record"
 msgstr "피카라오케 종료"
 
 # auto-translated
@@ -2348,7 +2348,7 @@ msgstr "당신의 점수"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""

@@ -172,8 +172,8 @@ msgstr "Anda tidak memiliki izin untuk memperbarui yt-dlp"
 
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
-msgstr "Menutup Pikaraoke sekarang!"
+msgid "Exiting Off the Record now!"
+msgstr "Menutup Off the Record sekarang!"
 
 #. Message shown after trying to quit pikaraoke without admin permissions.
 #: routes/admin.py:109
@@ -545,8 +545,8 @@ msgstr "Lagu"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - Mainkan Sejarah"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - Mainkan Sejarah"
 
 #: routes/splash.py:24
 msgid "Never sing again... ever."
@@ -1120,9 +1120,9 @@ msgstr "Masuk"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
 msgstr ""
-"Lupa? Mulai ulang PiKaraoke dengan --admin-password untuk menyetel yang "
+"Lupa? Mulai ulang Off the Record dengan --admin-password untuk menyetel yang "
 "baru."
 
 # auto-translated
@@ -1324,8 +1324,8 @@ msgstr "Di Linux/Raspberry Pi, instal dengan:"
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "dan mulai ulang PiKaraoke."
+msgid "and restart Off the Record."
+msgstr "dan mulai ulang Off the Record."
 
 #. Title text for the Score Phrases section of preferences
 #: templates/info.html:592
@@ -1495,8 +1495,8 @@ msgstr "Jaga agar server tetap aktif: tidak didukung pada platform ini."
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "Jaga agar server tetap aktif saat PiKaraoke sedang berjalan"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Jaga agar server tetap aktif saat Off the Record sedang berjalan"
 
 #. Text for the link where the user can clear all user preferences
 #: templates/info.html:744
@@ -1535,8 +1535,8 @@ msgstr "Versi FFmpeg:"
 
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
-msgstr "Versi Pikaraoke:"
+msgid "Off the Record version:"
+msgstr "Versi Off the Record:"
 
 #. Header of the information section about the System stats.
 #: templates/info.html:777
@@ -1598,10 +1598,10 @@ msgstr "Perbarui yt-dlp"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "* Tautan pembaruan di atas mungkin gagal jika Anda tidak memiliki izin file yang tepat.\n"
-"\t\t\t\t\t\t\tPeriksa log pikaraoke untuk kesalahan."
+"\t\t\t\t\t\t\tPeriksa log Off the Record untuk kesalahan."
 
 #. Title of the updates section.
 #: templates/info.html:827
@@ -1619,11 +1619,11 @@ msgstr "Perluas partisi Raspberry Pi"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
-"Jika Anda baru saja memasang gambar pikaraoke pi bawaan dan kartu SD Anda lebih besar dari 4 GB,\n"
+"Jika Anda baru saja memasang gambar Off the Record pi bawaan dan kartu SD Anda lebih besar dari 4 GB,\n"
 "\t\t\t\t\t\t\tAnda mungkin ingin memperluas sistem file untuk memanfaatkan ruang yang tersisa. Anda hanya perlu melakukan ini sekali saja.\n"
 "\t\t\t\t\t\t\tIni akan me-reboot sistem."
 
@@ -1681,8 +1681,8 @@ msgstr ""
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
-msgstr "Keluar dari Pikaraoke"
+msgid "Quit Off the Record"
+msgstr "Keluar dari Off the Record"
 
 #. Text for button which reboots the machine running Pikaraoke.
 #: templates/info.html:911
@@ -2217,12 +2217,12 @@ msgstr "Skor Anda"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""
 "Karena keterbatasan izin browser, Anda harus berinteraksi\n"
-"      dengan halaman satu kali sebelum mengizinkan pemutaran otomatis video. Pikaraoke tidak akan melakukannya\n"
+"      dengan halaman satu kali sebelum mengizinkan pemutaran otomatis video. Off the Record tidak akan melakukannya\n"
 "      bermain sebaliknya. Klik tombol di bawah untuk\n"
 "      <a onClick=\"handleConfirmation()\">konfirmasi</a>."
 

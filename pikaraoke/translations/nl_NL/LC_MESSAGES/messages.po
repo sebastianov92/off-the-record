@@ -199,8 +199,8 @@ msgstr "Je hebt geen toestemming om yt-dlp bij te werken"
 # auto-translated
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
-msgstr "Nu pikaraoke verlaten!"
+msgid "Exiting Off the Record now!"
+msgstr "Nu Off the Record verlaten!"
 
 # auto-translated
 #. Message shown after trying to quit pikaraoke without admin permissions.
@@ -608,8 +608,8 @@ msgstr "Liedje"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - Speelgeschiedenis"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - Speelgeschiedenis"
 
 # auto-translated
 #: routes/splash.py:24
@@ -1235,9 +1235,9 @@ msgstr "Login"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
 msgstr ""
-"Vergeten? Start PiKaraoke opnieuw met --admin-password om een ​​nieuw "
+"Vergeten? Start Off the Record opnieuw met --admin-password om een ​​nieuw "
 "wachtwoord in te stellen."
 
 # auto-translated
@@ -1454,8 +1454,8 @@ msgstr "Op Linux / Raspberry Pi installeer je het met:"
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
-msgstr "en start PiKaraoke opnieuw."
+msgid "and restart Off the Record."
+msgstr "en start Off the Record opnieuw."
 
 # auto-translated
 #. Title text for the Score Phrases section of preferences
@@ -1647,8 +1647,8 @@ msgstr "Houd de server wakker: wordt niet ondersteund op dit platform."
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "Houd de server wakker terwijl PiKaraoke actief is"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Houd de server wakker terwijl Off the Record actief is"
 
 # auto-translated
 #. Text for the link where the user can clear all user preferences
@@ -1695,7 +1695,7 @@ msgstr "FFmpeg-versie:"
 # auto-translated
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
+msgid "Off the Record version:"
 msgstr "Picaraoke-versie:"
 
 # auto-translated
@@ -1765,10 +1765,10 @@ msgstr "Update yt-dlp"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "*Deze updatelink hierboven mislukt mogelijk als u niet over de juiste bestandsrechten beschikt.\n"
-"\t\t\t\t\t\t\tControleer het pikaraoke-logboek op fouten."
+"\t\t\t\t\t\t\tControleer het Off the Record-logboek op fouten."
 
 # auto-translated
 #. Title of the updates section.
@@ -1788,11 +1788,11 @@ msgstr "Vouw het Raspberry Pi-bestandssysteem uit"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
-"Als je zojuist de vooraf gebouwde pikaraoke pi-image hebt geïnstalleerd en je SD-kaart groter is dan 4 GB,\n"
+"Als je zojuist de vooraf gebouwde Off the Record pi-image hebt geïnstalleerd en je SD-kaart groter is dan 4 GB,\n"
 "\t\t\t\t\t\t\tMisschien wilt u het bestandssysteem uitbreiden om de resterende ruimte te benutten. U hoeft dit slechts één keer te doen.\n"
 "\t\t\t\t\t\t\tHierdoor wordt het systeem opnieuw opgestart."
 
@@ -1855,7 +1855,7 @@ msgstr ""
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
+msgid "Quit Off the Record"
 msgstr "Stop met Picaraoke"
 
 # auto-translated
@@ -2425,7 +2425,7 @@ msgstr "Jouw score"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""

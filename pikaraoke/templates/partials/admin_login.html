@@ -1,0 +1,44 @@
+{# The host's login, opened from "Admin" in the menu of every page. Outside .box so
+   SPA navigation keeps it; the page to return to is read when the form is sent,
+   because the menu outlives the page it was first drawn on. #}
+<div id="admin-login-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
+	<div class="modal-background"></div>
+	<form class="modal-card" action="{{ url_for('admin.auth') }}" method="post">
+		<header class="modal-card-head">
+			<p class="modal-card-title" id="admin-login-title">{% trans %}Admin{% endtrans %}</p>
+			<button class="delete admin-login-close" type="button" aria-label="{{ _('Cancel') }}"></button>
+		</header>
+		<section class="modal-card-body">
+			<div class="field">
+				<label class="label" for="admin-login-password">{% trans %}Enter the administrator password{% endtrans %}</label>
+				<div class="control">
+					<input id="admin-login-password" name="admin_password" class="input" type="password" autocomplete="current-password" required />
+				</div>
+			</div>
+			<input type="hidden" name="next" />
+		</section>
+		<footer class="modal-card-foot buttons">
+			<button class="button is-primary" type="submit">{% trans %}Login{% endtrans %}</button>
+			<button class="button admin-login-close" type="button">{% trans %}Cancel{% endtrans %}</button>
+		</footer>
+	</form>
+</div>
+<script>
+	$(function () {
+		const $modal = $("#admin-login-modal");
+		const close = () => $modal.removeClass("is-active");
+		$(document).on("click", "#admin-login", (e) => {
+			e.preventDefault();
+			$("#menu, .navbar-burger").removeClass("is-active");
+			$modal.addClass("is-active");
+			$("#admin-login-password").val("").trigger("focus");
+		});
+		$modal.on("click", ".admin-login-close, .modal-background", close);
+		$(document).on("keydown", (e) => {
+			if (e.key === "Escape") close();
+		});
+		$modal.find("form").on("submit", function () {
+			this.next.value = location.pathname + location.search;
+		});
+	});
+</script>

@@ -331,7 +331,7 @@
 						</div>
 					</form>
 					{# MSG: Tells a locked-out host how to reset a forgotten admin password. #}
-					<p class="is-size-7 has-text-grey-light">{% trans %}Forgotten it? Restart PiKaraoke with --admin-password to set a new one.{% endtrans %}</p>
+					<p class="is-size-7 has-text-grey-light">{% trans %}Forgotten it? Restart Off the Record with --admin-password to set a new one.{% endtrans %}</p>
 				</div>
 			</div>
 		</div>
@@ -515,7 +515,7 @@
 					<p class="is-size-7 has-text-grey-light">
 						{% trans %}On Linux / Raspberry Pi, install it with:{% endtrans %}
 						<code>sudo apt install pulseaudio-utils</code>
-						{% trans %}and restart PiKaraoke.{% endtrans %}
+						{% trans %}and restart Off the Record.{% endtrans %}
 					</p>
 					{% endif %}
 				</div>
@@ -714,7 +714,7 @@
 				</div>
 				{% else %}
 				<label class="panel-block px-5 py-3 is-justify-content-space-between">
-					<span>{# MSG: Checkbox label which stops the server machine from sleeping #} {% trans %}Keep the server awake while PiKaraoke is running{% endtrans %}</span>
+					<span>{# MSG: Checkbox label which stops the server machine from sleeping #} {% trans %}Keep the server awake while Off the Record is running{% endtrans %}</span>
 					<input id="pref-keep-awake" type="checkbox" class="user-preference-checkbox checkbox ml-4 mr-0" data-pref="keep_awake" {% if keep_awake == True %}checked{% endif %}>
 				</label>
 				{% endif %}
@@ -732,7 +732,7 @@
 						{# MSG: Help text which explains why updating yt-dlp can fail. The log is a file on the machine running Pikaraoke. #}
 						<span class="is-block is-size-7 has-text-warning">{% trans -%}
 							* This update link above may fail if you don't have proper file permissions.
-							Check the pikaraoke log for errors.
+							Check the Off the Record log for errors.
 						{%- endtrans %}</span>
 					</span>
 					{# MSG: Text for the link which will try and update yt-dlp on the machine running Pikaraoke. #}
@@ -746,7 +746,7 @@
 						{% trans %}Expand Raspberry Pi filesystem{% endtrans %}
 						{# MSG: Explainitory text which explains why you might want to expand the filesystem. #}
 						<span class="is-block is-size-7 has-text-grey-light">{% trans -%}
-							If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,
+							If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,
 							you may want to expand the filesystem to utilize the remaining space. You only need to do this once.
 							This will reboot the system.
 						{%- endtrans %}</span>
@@ -838,7 +838,7 @@
 
 					<div class="buttons">
 						{# MSG: Text for button which turns off Pikaraoke for everyone using it at your house. #}
-						<a id="quit-link" class="button is-danger is-outlined" href="{{ url_for('admin.quit') }}">{% trans %}Quit Pikaraoke{% endtrans %}</a>
+						<a id="quit-link" class="button is-danger is-outlined" href="{{ url_for('admin.quit') }}">{% trans %}Quit Off the Record{% endtrans %}</a>
 						{# Host power control is meaningless in a container: only "Quit" applies. #}
 						{% if (is_pi or is_linux) and not is_container %}
 							{# MSG: Text for button which reboots the machine running Pikaraoke. #}

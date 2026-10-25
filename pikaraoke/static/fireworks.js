@@ -44,7 +44,7 @@ let fireworks = [];
 const addFirework = () => {
   const x = Math.random() * canvas.width;
   const y = Math.random() * canvas.height * 0.6;
-  const color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+  const color = "#fff";
   fireworks.push(new Firework(x, y, color));
 };
 

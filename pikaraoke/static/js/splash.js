@@ -133,8 +133,14 @@ const endSong = async (reason = null, showScore = false) => {
   // the server must be told which song ended, not which one is current by then.
   const endedPlaybackId = currentPlaybackId;
   currentPlaybackId = null;
-  if (showScore && !PikaraokeConfig.disableScore) {
-    await startScore(withBasePath("/static/"));
+  // Only singing measured from a microphone against an AI melody gets a score.
+  let score = null;
+  if (window.aiScore) {
+    if (showScore) score = await window.aiScore.finish();
+    else window.aiScore.reset();
+  }
+  if (score && !PikaraokeConfig.disableScore) {
+    await startScore(withBasePath("/static/"), score);
   }
   // A song that started during the score screen has loaded itself into the
   // player already; tearing down now would leave the screen black.

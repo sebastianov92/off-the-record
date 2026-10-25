@@ -70,7 +70,6 @@ def sessions():
 
 
 @sessions_bp.route("/history")
-@public
 @sessions_bp.arguments(HistoryQuery, location="query")
 def history(query):
     """The play log, showing every session or one, for anyone in the room."""

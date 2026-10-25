@@ -174,8 +174,8 @@ msgstr "У вас нет прав для обновления yt-dlp"
 
 #. Message shown after quitting pikaraoke.
 #: routes/admin.py:102
-msgid "Exiting pikaraoke now!"
-msgstr "Выйти из pikaraoke прямо сейчас!"
+msgid "Exiting Off the Record now!"
+msgstr "Выйти из Off the Record прямо сейчас!"
 
 #. Message shown after trying to quit pikaraoke without admin permissions.
 #: routes/admin.py:109
@@ -554,8 +554,8 @@ msgstr "Песня"
 
 # auto-translated
 #: routes/sessions_api.py:324
-msgid "PiKaraoke - Play History"
-msgstr "PiKaraoke - История воспроизведения"
+msgid "Off the Record - Play History"
+msgstr "Off the Record - История воспроизведения"
 
 #: routes/splash.py:24
 msgid "Never sing again... ever."
@@ -1137,9 +1137,9 @@ msgstr "Логин"
 #. Tells a locked-out host how to reset a forgotten admin password.
 #: templates/info.html:347
 msgid ""
-"Forgotten it? Restart PiKaraoke with --admin-password to set a new one."
+"Forgotten it? Restart Off the Record with --admin-password to set a new one."
 msgstr ""
-"Забыли? Перезапустите PiKaraoke с --admin-password, чтобы установить новый."
+"Забыли? Перезапустите Off the Record с --admin-password, чтобы установить новый."
 
 # auto-translated
 #. Title of the song library section.
@@ -1343,7 +1343,7 @@ msgstr "В Linux/Raspberry Pi установите его с помощью:"
 
 # auto-translated
 #: templates/info.html:580
-msgid "and restart PiKaraoke."
+msgid "and restart Off the Record."
 msgstr "и перезапустите ПиКараоке."
 
 # auto-translated
@@ -1526,8 +1526,8 @@ msgstr "Не позволяйте серверу спать: не поддерж
 # auto-translated
 #. Checkbox label which stops the server machine from sleeping
 #: templates/info.html:737
-msgid "Keep the server awake while PiKaraoke is running"
-msgstr "Не позволяйте серверу спать во время работы PiKaraoke"
+msgid "Keep the server awake while Off the Record is running"
+msgstr "Не позволяйте серверу спать во время работы Off the Record"
 
 #. Text for the link where the user can clear all user preferences
 #: templates/info.html:744
@@ -1566,8 +1566,8 @@ msgstr "Версия FFmpeg:"
 
 #. The version of Pikaraoke running right now.
 #: templates/info.html:771
-msgid "Pikaraoke version:"
-msgstr "Версия Pikaraoke:"
+msgid "Off the Record version:"
+msgstr "Версия Off the Record:"
 
 #. Header of the information section about the System stats.
 #: templates/info.html:777
@@ -1631,10 +1631,10 @@ msgstr "Обновить yt-dlp"
 #: templates/info.html:814
 msgid ""
 "* This update link above may fail if you don't have proper file permissions.\n"
-"\t\t\t\t\t\t\tCheck the pikaraoke log for errors."
+"\t\t\t\t\t\t\tCheck the Off the Record log for errors."
 msgstr ""
 "Ссылка на обновления выше может не сработат, если не будет хватать прав на файлы.\n"
-"    Смотрите ошибки в логах pikaraoke."
+"    Смотрите ошибки в логах Off the Record."
 
 #. Title of the updates section.
 #: templates/info.html:827
@@ -1651,11 +1651,11 @@ msgstr "Раскрыть файловую систему Raspberry Pi"
 #. filesystem.
 #: templates/info.html:837
 msgid ""
-"If you just installed the pre-built pikaraoke pi image and your SD card is larger than 4GB,\n"
+"If you just installed a pre-built Raspberry Pi image and your SD card is larger than 4GB,\n"
 "\t\t\t\t\t\t\tyou may want to expand the filesystem to utilize the remaining space. You only need to do this once.\n"
 "\t\t\t\t\t\t\tThis will reboot the system."
 msgstr ""
-"Если вы установили предварительно сформированный образ pikaraoke pi  и ваша SD карта больше 4Гб,\n"
+"Если вы установили предварительно сформированный образ Off the Record pi  и ваша SD карта больше 4Гб,\n"
 "    то можете захотеть расширить файловую систему, чтобы использовать оставшееся место. Это необходимо сделать только один раз.\n"
 "    Система будет перезагружена."
 
@@ -1715,8 +1715,8 @@ msgstr ""
 #. Text for button which turns off Pikaraoke for everyone using it at your
 #. house.
 #: templates/info.html:907
-msgid "Quit Pikaraoke"
-msgstr "Выход из Pikaraoke"
+msgid "Quit Off the Record"
+msgstr "Выход из Off the Record"
 
 #. Text for button which reboots the machine running Pikaraoke.
 #: templates/info.html:911
@@ -2268,12 +2268,12 @@ msgstr "Ваши баллы"
 #: templates/splash.html:137
 msgid ""
 "Due to limitations with browser permissions, you must interact\n"
-"      with the page once before it allows autoplay of videos. Pikaraoke will not\n"
+"      with the page once before it allows autoplay of videos. Off the Record will not\n"
 "      play otherwise. Click the button below to\n"
 "      <a onClick=\"handleConfirmation()\">confirm</a>."
 msgstr ""
 "Из за ограничений браузера, вам придется единожды\n"
-"      провзаимодействовать с этой страницей, чтоб разрешить автоматическое проигрывание видео. Pikaraoke не будет играть их без этого. Щелкните по кнопке внизу\n"
+"      провзаимодействовать с этой страницей, чтоб разрешить автоматическое проигрывание видео. Off the Record не будет играть их без этого. Щелкните по кнопке внизу\n"
 "      <a onClick=\"handleConfirmation()\">разрешить</a> ."
 
 #. Button to confirm to enable video autoplay.

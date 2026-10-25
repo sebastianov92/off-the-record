@@ -37,6 +37,14 @@
 	text-shadow: -1px 1px 5px black;
 }
 
+#score-breakdown{
+	position: absolute;
+	width: 100vw;
+	text-align: center;
+	top: 76vh;
+	text-shadow: -1px 1px 5px black;
+}
+
 canvas {
 	position: absolute;
 	top: 0;

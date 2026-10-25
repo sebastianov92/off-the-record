@@ -155,7 +155,7 @@
 
     html += '<td class="is-vcentered">';
     html += '<div class="is-flex is-flex-wrap-wrap is-align-items-baseline">';
-    html += '<span>' + np.now_playing_user + '</span>';
+    html += window.avatarTag(np.now_playing_user, 'avatar queue-avatar') + '<span>' + np.now_playing_user + '</span>';
     html += '<span class="is-hidden-mobile has-text-grey-light mx-2">&bull;</span>';
     html += '<span class="has-text-weight-bold has-text-white is-hidden-mobile">' + np.now_playing + '</span>';
     html += '<span class="is-size-7 has-text-weight-bold has-text-white is-hidden-tablet" style="width: 100%;">' + np.now_playing + '</span>';
@@ -374,7 +374,7 @@
 
     html += '<td class="is-vcentered">';
     html += '<div class="is-flex is-flex-wrap-wrap is-align-items-baseline">';
-    html += '<span>' + e.user + '</span>';
+    html += window.avatarTag(e.user, 'avatar queue-avatar') + '<span>' + e.user + '</span>';
     html += '<span class="is-hidden-mobile has-text-grey-light mx-2">&bull;</span>';
     html += '<span class="is-hidden-mobile">' + e.title + '</span>';
     html += '<span class="is-size-7 is-hidden-tablet" style="width: 100%;">' + e.title + '</span>';
@@ -612,7 +612,8 @@
 {% if admin %}
 <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
 	<div class="is-flex is-align-items-center">
-		<a class="add-random has-text-success" href="#"
+		{# MSG: Accessible name of the plus button that adds random songs to the queue. #}
+		<a class="add-random has-text-success" href="#" aria-label="{{ _('Add random songs') }}"
 			><i class="icon icon-plus-circled is-size-5 mr-1"></i></a>
 			{% trans %}Add <input id="randomNumberInput" class="input mx-2 p-2" pattern="\d*" maxlength="2" value="3" min="1" max="99" style="width: 42px" /> random songs{% endtrans %}
 	</div>

@@ -8,3 +8,7 @@ docker-compose*.yml
 __pycache__
 *.pyc
 .venv*
+songs
+node_modules
+branding
+.taste-skill

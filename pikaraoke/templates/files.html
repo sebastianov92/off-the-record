@@ -1,7 +1,22 @@
 {% extends 'base.html' %} {% block scripts %}
+<script src="{{ url_for('static', filename='ai/library.js') }}"></script>
 <script>
 	$(function () {
 		loadSingerList();
+		aiLibrary({
+			admin: {{ 'true' if admin else 'false' }},
+			statusUrl: window.pikaraokeConfig.basePath + "/api/ai/status",
+			processUrl: window.pikaraokeConfig.basePath + "/api/ai/process",
+			labels: {
+				queued: {{ _('Queued')|tojson }},
+				processing: {{ _('Processing')|tojson }},
+				ready: {{ _('Ready')|tojson }},
+				no_vocals: {{ _('No vocals')|tojson }},
+				error: {{ _('Error')|tojson }},
+				process: {{ _('Remove vocals and make lyrics')|tojson }},
+				reprocess: {{ _('Process again')|tojson }},
+			},
+		});
 
 		// --- A-Z strip ----------------------------------------------------
 		// On a phone the strip is fixed, so it has to be told where to sit: it
