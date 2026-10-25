@@ -6,9 +6,10 @@ services:
   off-the-record:
     image: ghcr.io/sebastianov92/off-the-record:latest
     container_name: off-the-record
-    # The address the QR code and the TV show; the container cannot see the
-    # mini PC's own LAN address from inside Docker's bridge network.
-    command: ["-u", "http://192.168.18.2:5555"]
+    # Host networking (Linux): the app sees the mini PC's own LAN address for the QR
+    # code, and phones can reach it by any address (LAN, Tailscale, hostname). With
+    # bridge networking it would need -u, and Socket.IO then refuses every other address.
+    network_mode: host
     environment:
       TZ: America/Guayaquil
     volumes:
@@ -19,12 +20,7 @@ services:
       - type: bind
         source: /DATA/AppData/off-the-record/data
         target: /home/pikaraoke/.pikaraoke
-    ports:
-      - target: 5555
-        published: "5555"
-        protocol: tcp
     restart: unless-stopped
-    network_mode: bridge
     logging:
       driver: json-file
       options:
@@ -36,11 +32,6 @@ services:
           description:
             en_us: Time zone
             es_es: Zona horaria
-      ports:
-        - container: "5555"
-          description:
-            en_us: Web interface and TV screen (/splash)
-            es_es: Interfaz web y pantalla de la tele (/splash)
       volumes:
         - container: /app/pikaraoke-songs
           description:

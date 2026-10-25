@@ -40,9 +40,11 @@ usuario ni contraseña.
 
 1. CasaOS > App Store > el botón **+** (arriba a la derecha) > **Install a customized app** >
    **Import** y pegar el contenido de `off-the-record.casaos.yml`.
-2. Revisar que el comando tenga la IP de la mini PC (`-u http://192.168.18.2:5555`): es la
-   dirección que muestra el QR. Si la IP cambia, cambiarla ahí.
-3. Instalar. Las carpetas quedan en `/DATA/AppData/off-the-record/` (`songs` y `data`).
+2. Instalar. Las carpetas quedan en `/DATA/AppData/off-the-record/` (`songs` y `data`).
+
+El contenedor usa la red del host: la app ve la IP de la mini PC para el QR y acepta que entres
+por cualquier dirección (LAN, Tailscale, nombre). No pasar `-u`: con `-u` Socket.IO rechaza toda
+dirección que no sea esa, y la tele o el celular quedan sin conexión.
 
 ## 3. Primer uso
 

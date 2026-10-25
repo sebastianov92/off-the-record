@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Liria ronda 3</title>
+<style>
+  :root { --bg:#0B0912; --card:#15111F; --line:rgba(255,255,255,.07); --ink:#F4F1FA; --mute:#9C94AE; --coral:#FF8A5C; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink); font-family:-apple-system,"SF Pro Display","Helvetica Neue",sans-serif; padding:56px 60px 64px; width:1600px; }
+  h1 { font-size:40px; font-weight:700; letter-spacing:-.02em; }
+  .sub { color:var(--mute); font-size:18px; margin-top:8px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:40px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:28px; padding:36px 32px 32px; position:relative; }
+  .card.rec { border-color:rgba(255,138,92,.55); box-shadow:0 0 0 1px rgba(255,138,92,.25), 0 20px 60px -20px rgba(255,77,141,.35); }
+  .badge { position:absolute; top:20px; right:22px; font-size:12px; font-weight:700; letter-spacing:.12em; color:var(--coral); }
+  .icon { display:flex; justify-content:center; padding:10px 0 26px; }
+  .icon img { width:200px; height:200px; border-radius:44px; box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 24px 50px -18px rgba(255,77,141,.45); }
+  .lockup { height:92px; display:flex; align-items:center; justify-content:center; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .lockup img { height:64px; }
+  .sizes { display:flex; align-items:flex-end; gap:22px; padding:22px 0 18px; }
+  .sizes figure { text-align:center; color:var(--mute); font-size:11px; }
+  .sizes img { display:block; margin:0 auto 6px; }
+  .light { background:#fff; border-radius:12px; height:56px; display:flex; align-items:center; justify-content:center; margin-left:auto; padding:0 18px; }
+  .light img { height:34px; }
+  h2 { font-size:24px; font-weight:700; letter-spacing:-.01em; margin-top:6px; }
+  p { color:var(--mute); font-size:16px; line-height:1.45; margin-top:8px; }
+</style></head><body>
+<h1>Liria · conceptos, ronda 3</h1>
+<div class="sub">Moderno y nocturno: glifo en degradado coral a rosa sobre azul noche. Así se vería en la tele.</div>
+<div class="grid">
+  <div class="card rec"><div class="badge">RECOMENDADO</div>
+    <div class="icon"><img src="../concepts/a-tile.svg"></div>
+    <div class="lockup"><img src="../concepts/a-lockup-dark.svg"></div>
+    <div class="sizes">
+      <figure><img src="../concepts/a-tile.svg" width="64" height="64">64</figure>
+      <figure><img src="../concepts/a-tile.svg" width="32" height="32">32</figure>
+      <figure><img src="../concepts/a-tile.svg" width="16" height="16">16</figure>
+      <div class="light"><img src="../concepts/a-lockup.svg"></div>
+    </div>
+    <h2>A · La i es un micrófono</h2>
+    <p>El punto de la i es la cabeza del micrófono y su rejilla son dos versos de karaoke. El tallo es el mango.</p>
+  </div>
+  <div class="card">
+    <div class="icon"><img src="../concepts/b-tile.svg"></div>
+    <div class="lockup"><img src="../concepts/b-lockup-dark.svg"></div>
+    <div class="sizes">
+      <figure><img src="../concepts/b-tile.svg" width="64" height="64">64</figure>
+      <figure><img src="../concepts/b-tile.svg" width="32" height="32">32</figure>
+      <figure><img src="../concepts/b-tile.svg" width="16" height="16">16</figure>
+      <div class="light"><img src="../concepts/b-lockup.svg"></div>
+    </div>
+    <h2>B · Lira</h2>
+    <p>Una lira de trazo fino, eco del nombre. La cuerda central es una onda: la voz que vibra.</p>
+  </div>
+  <div class="card">
+    <div class="icon"><img src="../concepts/c-tile.svg"></div>
+    <div class="lockup"><img src="../concepts/c-lockup-dark.svg"></div>
+    <div class="sizes">
+      <figure><img src="../concepts/c-tile.svg" width="64" height="64">64</figure>
+      <figure><img src="../concepts/c-tile.svg" width="32" height="32">32</figure>
+      <figure><img src="../concepts/c-tile.svg" width="16" height="16">16</figure>
+      <div class="light"><img src="../concepts/c-lockup.svg"></div>
+    </div>
+    <h2>C · Nota-micrófono</h2>
+    <p>Una corchea con la plica abajo que también es micrófono, redibujada con geometría limpia.</p>
+  </div>
+</div>
+</body></html>

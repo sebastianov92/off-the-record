@@ -55,6 +55,8 @@ COPY build_scripts/docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 # Links the GHCR package to the fork's repository.
 LABEL org.opencontainers.image.source="https://github.com/sebastianov92/pikaraoke" \
       org.opencontainers.image.title="Off the Record" \
+      org.opencontainers.image.description="Home karaoke that removes the vocals from any song and shows word-timed lyrics. A fork of PiKaraoke." \
+      org.opencontainers.image.documentation="https://github.com/sebastianov92/pikaraoke/tree/karaoke-ai#readme" \
       org.opencontainers.image.licenses="GPL-3.0"
 
 VOLUME ["/app/pikaraoke-songs", "/home/pikaraoke/.pikaraoke"]
