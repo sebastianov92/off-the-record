@@ -12,7 +12,7 @@ struct audio {
 audio *audio_open(const audio_config *cfg, audio_input_info *in, audio_output_info *out, const char **error) {
     audio *a = calloc(1, sizeof(*a));
     *error = NULL;
-#ifdef __linux__
+#ifdef OTR_ALSA
     if (!strcmp(cfg->backend, "alsa")) {
         a->alsa = 1;
         a->dev = alsa_open(cfg, in, out, error);
@@ -27,7 +27,7 @@ audio *audio_open(const audio_config *cfg, audio_input_info *in, audio_output_in
     return a;
 }
 
-#ifdef __linux__
+#ifdef OTR_ALSA
 #define PICK(fn, ...) (a->alsa ? alsa_##fn(__VA_ARGS__) : null_##fn(__VA_ARGS__))
 #else
 #define PICK(fn, ...) null_##fn(__VA_ARGS__)
@@ -39,7 +39,7 @@ int audio_queued(audio *a) { return PICK(queued, a->dev); }
 
 void audio_close(audio *a) {
     if (!a) return;
-#ifdef __linux__
+#ifdef OTR_ALSA
     if (a->alsa) alsa_close(a->dev);
     else
 #endif
@@ -48,7 +48,7 @@ void audio_close(audio *a) {
 }
 
 int audio_probe(char *out, int size) {
-#ifdef __linux__
+#ifdef OTR_ALSA
     return alsa_probe(out, size);
 #else
     return snprintf(out, size, "{\"cards\":[]}");

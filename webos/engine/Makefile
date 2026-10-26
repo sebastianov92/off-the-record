@@ -1,4 +1,5 @@
-# otr-mic. `make` builds for this machine (the null audio device on a Mac),
+# otr-mic. `make` builds for this machine with the null audio device (the tests
+# and the browser tests drive that one, on a Mac or a Linux CI runner alike),
 # `make test` runs the C tests with sanitizers, `make linux` is what
 # docker-build.sh runs inside an ARM container for the TV (static, musl, ALSA).
 CC ?= cc
@@ -25,7 +26,7 @@ test: build/test_engine build/otr-mic
 
 linux:
 	@mkdir -p dist
-	$(CC) -O2 -static $(WARN) -Wno-sign-compare -Wno-unused-function $(INC) -Ivendor/tinyalsa/include \
+	$(CC) -O2 -static -DOTR_ALSA $(WARN) -Wno-sign-compare -Wno-unused-function $(INC) -Ivendor/tinyalsa/include \
 	  -o dist/otr-mic-$(ARCH) src/main.c $(SRC) src/audio_alsa.c $(TINYALSA) -lpthread -lm
 	strip dist/otr-mic-$(ARCH)
 

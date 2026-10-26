@@ -699,7 +699,7 @@ static void usage(void) {
 int main(int argc, char **argv) {
     pthread_mutex_init(&E.lock, NULL);
     E.cfg.backend =
-#ifdef __linux__
+#ifdef OTR_ALSA
         "alsa";
 #else
         "null";

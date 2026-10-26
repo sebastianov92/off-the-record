@@ -10,7 +10,7 @@ int null_write(void *dev, const float *mono, int frames);
 int null_queued(void *dev);
 void null_close(void *dev);
 
-#ifdef __linux__
+#ifdef OTR_ALSA
 void *alsa_open(const audio_config *cfg, audio_input_info *in, audio_output_info *out, const char **error);
 int alsa_read(void *dev, float *mono);
 int alsa_write(void *dev, const float *mono, int frames);

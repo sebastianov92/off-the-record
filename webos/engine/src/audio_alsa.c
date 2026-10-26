@@ -4,7 +4,7 @@
  * (it plays app audio on 0,6). The ADSP only takes 512-frame periods; tinyalsa
  * sets exactly what it is asked, so every size here comes from the PCM's own
  * limits. */
-#ifdef __linux__
+#ifdef OTR_ALSA
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
