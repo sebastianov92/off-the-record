@@ -31,8 +31,14 @@
 
   const VERTEX = "attribute vec2 a_pos; void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }";
 
+  // High precision where the GPU has it: the LG TV's (PowerVR) mediump is 16-bit,
+  // and the noise hashes overflow there, leaving all but a corner of the screen black.
   const COMMON = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 uniform vec2 u_res;
 uniform float u_time;
 uniform float u_seed;

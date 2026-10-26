@@ -371,7 +371,8 @@ const handleNowPlayingUpdate = (np) => {
 
   if (np.now_playing_url && np.now_playing_url !== currentVideoUrl) {
     currentVideoUrl = np.now_playing_url;
-    const streamUrl = np.now_playing_url;
+    // The LG TV app plays its own copy of the song when it has one (ai/tv-bridge.js).
+    const streamUrl = window.tvSongCopy?.(np) || np.now_playing_url;
     $("#video-source").attr("src", "");
     video.load();
     $("#video-source").attr("src", streamUrl);
@@ -397,6 +398,10 @@ const handleNowPlayingUpdate = (np) => {
         hlsInstance.attachMedia(video);
       }
     } else {
+      // A plain file plays from <source>, which a src left by an HLS song before it
+      // would override (the LG TV app's copies are plain files on an HLS server).
+      if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+      video.removeAttribute("src");
       seekOnceLoaded();
     }
 
@@ -516,6 +521,12 @@ const setupVideoPlayer = () => {
   video.addEventListener("ended", () => { endSong("complete", true); });
   video.addEventListener("timeupdate", (e) => { $("#current").text(formatTime(video.currentTime)); });
   $("#video source")[0].addEventListener("error", (e) => {
+    // A TV copy the player cannot read: the app drops it and the stream takes over.
+    if (window.tvSongCopyFailed?.(e.target.getAttribute("src"))) {
+      currentVideoUrl = null;
+      handleNowPlayingUpdate(nowPlaying);
+      return;
+    }
     if (isMediaPlaying(video)) {
       endSong("error while playing");
     }

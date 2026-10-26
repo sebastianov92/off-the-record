@@ -150,41 +150,37 @@ def scores():
     return jsonify(_service().store.top_scores(session_id, limit))
 
 
+# Encodings the guide is served in. The TV app decodes its guide whole before it
+# plays (buffer-guide.js): a four-minute AAC takes it ~10 s, PCM next to none.
+GUIDE_FORMATS = {
+    "m4a": ["-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart"],
+    "wav": ["-ac", "1", "-ar", "24000", "-c:a", "pcm_s16le"],
+}
+
+
 @ai_bp.route("/ai/guide/<int:song_id>")
 @public
 def guide(song_id: int):
-    """The vocal stem, pitch-shifted to match a transposed song and cached per key."""
+    """The vocal stem, pitch-shifted to match a transposed song and cached per key and format."""
     semitones = request.args.get("semitones", 0, type=int)
+    fmt = request.args.get("format", "m4a")
+    if fmt not in GUIDE_FORMATS:
+        abort(400)
     folder = ai_dir(song_id)
-    if semitones == 0:
+    if semitones == 0 and fmt == "m4a":
         return send_from_directory(folder, "vocals.m4a", conditional=True)
-    name = f"vocals_{semitones:+d}.m4a"
+    name = f"vocals_{semitones:+d}.{fmt}"
     target = os.path.join(folder, name)
     if not os.path.exists(target):
         source = os.path.join(folder, "vocals.m4a")
         if not os.path.exists(source):
             abort(404)
+        pitch = ["-af", f"rubberband=pitch={2 ** (semitones / 12)}"] if semitones else []
         # Unique per request: the TV and a phone can ask for one key at once, and two
         # ffmpegs sharing one file break each other's faststart pass.
-        partial = f"{target}.{uuid.uuid4().hex}.part.m4a"
+        partial = f"{target}.{uuid.uuid4().hex}.part.{fmt}"
         subprocess.run(
-            [
-                "ffmpeg",
-                "-v",
-                "error",
-                "-y",
-                "-i",
-                source,
-                "-af",
-                f"rubberband=pitch={2 ** (semitones / 12)}",
-                "-c:a",
-                "aac",
-                "-b:a",
-                "160k",
-                "-movflags",
-                "+faststart",
-                partial,
-            ],
+            ["ffmpeg", "-v", "error", "-y", "-i", source, *pitch, *GUIDE_FORMATS[fmt], partial],
             check=True,
         )
         os.replace(partial, target)

@@ -360,3 +360,12 @@ class TestVersion:
         sl.add("/songs/old.mp4")
         assert sl.rename("/songs/old.mp4", "/songs/missing.mp4") is False
         assert sl.version == 1
+
+
+def test_finds_a_youtube_download_in_either_name_format_and_any_folder():
+    songs = SongList()
+    songs.update(["/songs/A---dQw4w9WgXcQ.mp4", "/songs/sub/B [fAzCnCwJO5c].m4a", "/songs/C.mp4"])
+
+    assert songs.with_youtube_id("dQw4w9WgXcQ") == "/songs/A---dQw4w9WgXcQ.mp4"
+    assert songs.with_youtube_id("fAzCnCwJO5c") == "/songs/sub/B [fAzCnCwJO5c].m4a"
+    assert songs.with_youtube_id("zzzzzzzzzzz") is None

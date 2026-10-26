@@ -10,7 +10,7 @@ import sys
 from dataclasses import dataclass
 from urllib.parse import parse_qs, urlparse
 
-from pikaraoke.lib.get_platform import get_installed_js_runtime
+from pikaraoke.lib.get_platform import get_data_directory, get_installed_js_runtime
 from pikaraoke.lib.ytdlp_binary import ensure_ytdlp_binary, ytdlp_command
 
 # YouTube video IDs are always exactly 11 characters
@@ -35,6 +35,20 @@ def _js_runtime_args() -> list[str]:
         # Deno is automatically assumed by yt-dlp, and does not need specification here
         return ["--js-runtimes", runtime]
     return []
+
+
+def youtube_cookies_file() -> str:
+    """Where the host's exported YouTube cookies go (Settings uploads them here).
+
+    When YouTube blocks the server's connection as a bot, yt-dlp still gets through
+    signed in as that account.
+    """
+    return os.path.join(get_data_directory(), "youtube-cookies.txt")
+
+
+def _cookies_args() -> list[str]:
+    path = youtube_cookies_file()
+    return ["--cookies", path] if os.path.isfile(path) else []
 
 
 def get_youtubedl_version() -> str:
@@ -239,7 +253,7 @@ def build_ytdl_download_command(
     ]
     if audio_only:
         args += ["-x", "--audio-format", "m4a"]
-    cmd = ytdlp_command() + args + _js_runtime_args()
+    cmd = ytdlp_command() + args + _js_runtime_args() + _cookies_args()
     if youtubedl_proxy:
         cmd += ["--proxy", youtubedl_proxy]
     if additional_args:
@@ -261,7 +275,9 @@ def get_search_results(query: str) -> list[SearchResult]:
     logging.info(f"Searching YouTube for: {query}")
     num_results = 10
     yt_search = f"ytsearch{num_results}:{query}"
-    cmd = ytdlp_command() + ["-j", "--no-playlist", "--flat-playlist", yt_search]
+    cmd = (
+        ytdlp_command() + ["-j", "--no-playlist", "--flat-playlist"] + _cookies_args() + [yt_search]
+    )
     logging.debug(f"yt-dlp search command: {' '.join(cmd)}")
     try:
         output = subprocess.check_output(cmd).decode("utf-8", "ignore")
@@ -309,7 +325,7 @@ def _resolve_stream_url(video_url: str) -> str | None:
         "--extractor-args",
         "youtube:player_client=android",
     ]
-    cmd += _js_runtime_args()
+    cmd += _js_runtime_args() + _cookies_args()
     cmd += [video_url]
     logging.debug(f"yt-dlp get stream URL command: {' '.join(cmd)}")
     try:

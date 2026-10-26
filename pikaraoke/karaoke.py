@@ -284,6 +284,7 @@ class Karaoke:
         self._relay_to_browser("play_logged")
         self.events.on("skip_requested", lambda: self.playback_controller.skip(False))
         self.events.on("song_downloaded", self.register_downloaded_song)
+        self.events.on("song_in_library", self.announce_library_copy)
         self._relay_to_browser("sync_started")
         self._relay_to_browser("sync_finished")
 
@@ -649,6 +650,8 @@ class Karaoke:
             # showing and setting the key the next song will start in.
             "autoplay": self.preferences.get_or_default("autoplay"),
             "up_next_file": next_song["file"] if next_song else None,
+            # The webOS app plays its own copy of this file when it has one.
+            "now_playing_file": self.playback_controller.now_playing_filename,
             "up_next_transpose": next_song["semitones"] if next_song else 0,
             "volume": self.volume,
             # The splash screen never reloads, so the session name rides this
@@ -690,6 +693,16 @@ class Karaoke:
         this event resolves against a song the library already knows about.
         """
         self.song_manager.register_download(song_path)
+        if self.socketio:
+            self.socketio.emit(
+                "song_downloaded",
+                {"youtube_id": youtube_id, "path": song_path},
+                namespace="/",
+            )
+
+    def announce_library_copy(self, song_path: str, youtube_id: str | None) -> None:
+        """A download that found its song already in the library: browsers show it
+        as downloaded, with nothing registered or processed again."""
         if self.socketio:
             self.socketio.emit(
                 "song_downloaded",

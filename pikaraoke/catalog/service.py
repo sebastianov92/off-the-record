@@ -8,10 +8,10 @@ import tempfile
 from gevent import spawn
 from werkzeug.datastructures import FileStorage
 
-from pikaraoke.catalog.enrich import enrich_song, file_tags
+from pikaraoke.catalog.enrich import CONFIDENT, enrich_song, file_tags
 from pikaraoke.catalog.store import CatalogStore
 from pikaraoke.lib.metadata_parser import sanitize_filename
-from pikaraoke.lib.metadata_providers import get_provider
+from pikaraoke.lib.metadata_providers import get_provider, suggest_metadata
 
 
 class CatalogService:
@@ -23,7 +23,19 @@ class CatalogService:
     def start(self) -> None:
         # After Karaoke's own handler, so the song is already in the library.
         self._karaoke.events.on("song_downloaded", self._on_downloaded)
+        self._karaoke.download_manager.find_in_library = self.find_in_library
         self.store.prune_artists()
+
+    def find_in_library(self, title: str) -> str | None:
+        """The library song a YouTube title names, by the artist and title iTunes reads in it."""
+        try:
+            suggestions = suggest_metadata(title, get_provider(self._karaoke.preferences), limit=1)
+        except (OSError, ValueError) as e:
+            logging.warning(f"Metadata lookup failed for {title}: {e}")
+            return None
+        if not suggestions or suggestions[0]["score"] < CONFIDENT:
+            return None
+        return self.store.find_song(suggestions[0]["artist"], suggestions[0]["title"])
 
     def _on_downloaded(self, song_path: str, _youtube_id: str | None) -> None:
         spawn(self.enrich_path, song_path)

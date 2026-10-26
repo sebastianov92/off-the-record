@@ -597,3 +597,24 @@ class TestStreamManagerPlayFile:
 
         assert result.success is False
         assert result.error is not None
+
+
+class TestDirectSource:
+    """What a screen may play as it is, instead of the song's stream."""
+
+    def test_an_mp4_plays_as_it_is(self, test_prefs):
+        assert StreamManager(test_prefs).direct_source("/songs/a.mp4") == "/songs/a.mp4"
+
+    def test_a_processed_song_plays_its_instrumental(self, test_prefs):
+        sm = StreamManager(test_prefs)
+        sm.audio_source = lambda path: "/ai/7/instrumental.m4a"
+        assert sm.direct_source("/songs/a.m4a") == "/ai/7/instrumental.m4a"
+
+    def test_a_format_the_screen_cannot_play_needs_the_stream(self, test_prefs):
+        assert StreamManager(test_prefs).direct_source("/songs/a.cdg") is None
+
+    def test_a_key_change_or_loudness_fix_needs_the_stream(self, test_prefs):
+        sm = StreamManager(test_prefs)
+        assert sm.direct_source("/songs/a.mp4", semitones=2) is None
+        test_prefs.set("normalize_audio", True)
+        assert sm.direct_source("/songs/a.mp4") is None

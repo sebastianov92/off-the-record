@@ -1,7 +1,9 @@
 """Settings page: preferences and host controls."""
 
+import os
+
 import flask_babel
-from flask import render_template
+from flask import jsonify, render_template, request
 from flask_smorest import Blueprint
 
 from pikaraoke.constants import ITUNES_COUNTRIES, LANGUAGES, per_page_options
@@ -14,6 +16,7 @@ from pikaraoke.lib.current_app import (
     is_admin,
 )
 from pikaraoke.lib.get_platform import is_linux, is_running_in_docker
+from pikaraoke.lib.youtube_dl import youtube_cookies_file
 
 _ = flask_babel.gettext
 
@@ -77,5 +80,38 @@ def settings():
         mic_available=k.sound_manager.available,
         mic_passthrough_enabled=k.enable_mic_passthrough,
         keep_awake=k.keep_awake,
+        youtube_cookies=os.path.isfile(youtube_cookies_file()),
         keep_awake_unsupported=keep_awake.unsupported_reason(),
     )
+
+
+# A browser's export runs to a few hundred KB at most.
+MAX_COOKIES_BYTES = 1_000_000
+# yt-dlp reads only the Netscape cookies.txt format, which opens with one of these.
+COOKIES_HEADERS = (b"# Netscape HTTP Cookie File", b"# HTTP Cookie File")
+
+
+@settings_bp.route("/api/youtube_cookies", methods=["POST"])
+def upload_youtube_cookies():
+    """Store the host's exported YouTube cookies, for when YouTube blocks downloads."""
+    upload = request.files.get("cookies")
+    data = upload.read(MAX_COOKIES_BYTES + 1) if upload else b""
+    if len(data) > MAX_COOKIES_BYTES or not data.lstrip().startswith(COOKIES_HEADERS):
+        # MSG: Error shown when the uploaded YouTube cookies file is not a cookies.txt export.
+        return jsonify({"error": _("That is not a cookies.txt file.")}), 400
+    path = youtube_cookies_file()
+    partial = f"{path}.part"
+    # Private: the file signs in to the host's YouTube account.
+    with open(os.open(partial, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "wb") as f:
+        f.write(data)
+    os.replace(partial, path)
+    return jsonify({"loaded": True})
+
+
+@settings_bp.route("/api/youtube_cookies", methods=["DELETE"])
+def remove_youtube_cookies():
+    """Forget the YouTube cookies: downloads go out anonymously again."""
+    path = youtube_cookies_file()
+    if os.path.exists(path):
+        os.remove(path)
+    return jsonify({"loaded": False})

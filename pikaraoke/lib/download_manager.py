@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import subprocess
 import uuid
+from collections.abc import Callable
 from queue import Queue
 from time import monotonic
 
@@ -72,6 +73,15 @@ def _video_band_end(line: str, fallback: float) -> float:
 # The progress templates share the stream yt-dlp's prose goes to, so a download killed
 # mid-transfer ends on one of these. They carry no diagnosis a person can read.
 _TEMPLATED_PREFIXES = (PROGRESS_PREFIX, POSTPROCESS_PREFIX, SIZE_PREFIX)
+
+
+# YouTube refusing the server's connection as a bot, or rate-limiting it. Another
+# attempt seconds later only deepens the block, so these are never retried.
+_BLOCKED_MARKERS = ("Sign in to confirm you", "HTTP Error 429")
+
+
+def _youtube_blocked(output: str) -> bool:
+    return any(marker in output for marker in _BLOCKED_MARKERS)
 
 
 def _summarise_ytdl_failure(output: str) -> str:
@@ -149,6 +159,8 @@ class DownloadManager:
         self._download_path = download_path
         self._youtubedl_proxy = youtubedl_proxy
         self._additional_ytdl_args = additional_ytdl_args
+        # Set by the catalog: a library song the title names (same artist and title).
+        self.find_in_library: Callable[[str], str | None] = lambda _title: None
         self.download_queue: Queue = Queue()
         self.pending_downloads: list[dict] = []  # Shadow queue for visibility
         self.download_errors: list[dict] = []  # Track failed downloads
@@ -444,6 +456,30 @@ class DownloadManager:
         )
         return True
 
+    def _library_copy(self, video_url: str, title: str | None) -> str | None:
+        """The song already in the library: this very video, or the same song."""
+        video_id = get_youtube_id_from_url(video_url)
+        if video_id:
+            path = self._song_manager.songs.with_youtube_id(video_id)
+            if path:
+                return path
+        return self.find_in_library(title) if title else None
+
+    def _use_library_copy(self, path: str, video_url: str, enqueue: bool, user: str) -> None:
+        """Queue the copy the library has instead of downloading and processing another."""
+        from flask_babel import _
+
+        name = self._song_manager.display_name_from_path(path)
+        if enqueue:
+            self._queue_manager.enqueue(path, user, log_action=False)
+            # MSG: Message shown when a requested song is already in the library and was queued instead of downloaded.
+            message = _("Already in the library, queued: %s") % name
+        else:
+            # MSG: Message shown when a requested song is already in the library, so nothing is downloaded.
+            message = _("Already in the library: %s") % name
+        self._events.emit("notification", message, "success")
+        self._events.emit("song_in_library", path, get_youtube_id_from_url(video_url))
+
     def _execute_download(self, request: dict) -> int:
         """Execute a video download, re-queueing it if it fails with attempts to spare.
 
@@ -459,6 +495,12 @@ class DownloadManager:
         enqueue = request["enqueue"]
         user = request["user"]
         displayed_title = request["title"] if request["title"] else video_url
+
+        if not request["attempts"]:
+            existing = self._library_copy(video_url, request["title"])
+            if existing:
+                self._use_library_copy(existing, video_url, enqueue, user)
+                return 0
 
         # A retry is a quiet safety net, and the queue page already shows it. Repeating
         # this toast on every attempt just reads as a glitch.
@@ -486,13 +528,23 @@ class DownloadManager:
 
         if rc != 0:
             logging.error(f"yt-dlp stderr: {output}")
-            if self._requeue(request):
+            blocked = _youtube_blocked(output)
+            if not blocked and self._requeue(request):
                 return rc
 
-            # MSG: Message shown after the download process is completed but the song is not found
-            self._events.emit(
-                "notification", _("Error downloading song: ") + displayed_title, "danger"
-            )
+            if blocked:
+                # MSG: Message shown when YouTube blocks downloads from the server's internet connection.
+                error = _(
+                    "YouTube is blocking downloads from this connection. Wait a few hours, "
+                    "or load YouTube cookies in Settings."
+                )
+                self._events.emit("notification", error, "danger")
+            else:
+                error = _summarise_ytdl_failure(output)
+                # MSG: Message shown after the download process is completed but the song is not found
+                self._events.emit(
+                    "notification", _("Error downloading song: ") + displayed_title, "danger"
+                )
             self.download_errors.append(
                 {
                     "id": str(uuid.uuid4()),
@@ -501,7 +553,7 @@ class DownloadManager:
                     "user": user,
                     "enqueue": enqueue,
                     "audio_only": request.get("audio_only", False),
-                    "error": _summarise_ytdl_failure(output),
+                    "error": error,
                 }
             )
         else:

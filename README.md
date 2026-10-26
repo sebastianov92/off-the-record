@@ -63,6 +63,13 @@ docker compose -f off-the-record.casaos.yml up -d
 Las canciones y los datos quedan en `/DATA/AppData/off-the-record/`. Para guardarlos en otro
 lugar, cambia las rutas `source` del archivo.
 
+### Tele LG (webOS)
+
+Con la tele rooteada y Homebrew Channel, instala **Off the Record** desde el repositorio de
+LumiOS (`https://github.com/sebastianov92/LumiOS/releases/latest/download/repo.json`). Muestra
+la pantalla de karaoke, se maneja con el control remoto y usa un micrófono USB con
+ecualizador, eco y anti-acople. Guía: [docs/WEBOS.md](docs/WEBOS.md).
+
 ### Primer uso
 
 - **Celular:** `http://<ip-de-la-pc>:5555`.

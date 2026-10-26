@@ -1,5 +1,7 @@
 """Library page and its API: songs with filters, artists, uploads, metadata fixes."""
 
+import logging
+
 import flask_babel
 from flask import (
     abort,
@@ -163,6 +165,27 @@ def rename_artist(artist_id: int):
     if not name:
         abort(400)
     return jsonify({"artist": _service().store.rename_artist(artist_id, name)})
+
+
+@catalog_bp.route("/api/catalog/songs/<int:song_id>", methods=["DELETE"])
+def delete_song(song_id: int):
+    """Delete a song from the library, with its karaoke stems and credits (admin)."""
+    song = _service().store.song(song_id)
+    if not song:
+        abort(404)
+    k = get_karaoke_instance()
+    if k.is_song_in_use(song["file_path"]):
+        # MSG: Error shown when trying to delete a song that is queued or playing.
+        return jsonify({"error": _("This song is queued or playing.")}), 409
+    try:
+        k.song_manager.delete(song["file_path"])
+    except OSError as e:
+        logging.error(f"Error deleting {song['file_path']}: {e}")
+        # MSG: Message shown after a delete failed. Followed by the system error.
+        return jsonify({"error": _("Error deleting file: %s") % e}), 500
+    current_app.config["AI_SERVICE"].store.prune_orphans()
+    _service().store.prune_artists()
+    return jsonify({"deleted": song_id})
 
 
 @catalog_bp.route("/api/catalog/songs/<int:song_id>/suggestions")

@@ -32,6 +32,17 @@ class AdminAuth:
         """Identifies the current password, so changing it logs every device out."""
         return self._get("session_token")
 
+    @property
+    def device_token(self) -> str:
+        """Admin credential for a client that cannot keep the session cookie.
+
+        The webOS app shows the splash in a frame the Lax cookie never reaches, so it
+        sends this in a header instead. Derived from the session token, so changing
+        the password revokes it along with every cookie.
+        """
+        message = f"device:{self.session_token}".encode("utf-8")
+        return hmac.new(self.secret_key.encode("utf-8"), message, hashlib.sha256).hexdigest()
+
     def is_password_set(self) -> bool:
         """True when admin mode is locked down. False means everyone is an admin."""
         return bool(self._get("password_hash"))

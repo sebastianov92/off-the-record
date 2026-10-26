@@ -1,4 +1,4 @@
-"""The pitch-shifted vocal guide (/ai/guide), cached per key."""
+"""The vocal guide (/ai/guide), pitch-shifted and re-encoded on demand, cached per key and format."""
 
 from pathlib import Path
 from unittest.mock import patch
@@ -42,3 +42,35 @@ def test_a_cached_key_is_served_without_rendering_again(tmp_path):
 
     run.assert_not_called()
     assert response.data == b"cached"
+
+
+def test_the_tv_gets_a_mono_pcm_guide_even_in_the_original_key(tmp_path):
+    (tmp_path / "vocals.m4a").write_bytes(b"vocals")
+    client = make_route_app(ai_bp, []).test_client()
+
+    with (
+        patch("pikaraoke.ai.routes.ai_dir", return_value=str(tmp_path)),
+        patch("pikaraoke.ai.routes.subprocess.run", side_effect=_fake_ffmpeg) as run,
+    ):
+        response = client.get("/ai/guide/1?semitones=0&format=wav")
+
+    cmd = run.call_args.args[0]
+    assert "rubberband" not in " ".join(cmd)
+    assert cmd[cmd.index("-c:a") + 1] == "pcm_s16le"
+    assert cmd[cmd.index("-ac") + 1] == "1"
+    assert response.data == b"shifted"
+    assert (tmp_path / "vocals_+0.wav").exists()
+
+
+def test_an_unknown_format_is_refused(tmp_path):
+    (tmp_path / "vocals.m4a").write_bytes(b"vocals")
+    client = make_route_app(ai_bp, []).test_client()
+
+    with (
+        patch("pikaraoke.ai.routes.ai_dir", return_value=str(tmp_path)),
+        patch("pikaraoke.ai.routes.subprocess.run") as run,
+    ):
+        response = client.get("/ai/guide/1?format=flac")
+
+    run.assert_not_called()
+    assert response.status_code == 400

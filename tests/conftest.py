@@ -56,6 +56,10 @@ class StubAdminAuth:
     def session_token(self) -> str:
         return "not-the-session-cookie"
 
+    @property
+    def device_token(self) -> str:
+        return "the-device-token"
+
 
 def make_route_app(blueprint, linked_endpoints, admin: bool = True):
     """A Flask app with just enough wiring to render one blueprint's templates.

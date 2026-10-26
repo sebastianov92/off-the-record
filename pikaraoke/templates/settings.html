@@ -20,7 +20,29 @@
 			}
 		}
 
+		function showYoutubeCookies(loaded) {
+			$("#youtube-cookies-status").text(loaded
+				? {{ _('Loaded: downloads go out signed in to that YouTube account.') | tojson }}
+				: {{ _('For when YouTube blocks downloads. Export them from a browser signed in to YouTube, in cookies.txt format.') | tojson }});
+			$("#youtube-cookies-remove").toggleClass("is-hidden", !loaded);
+		}
+
 		$(function () {
+
+			$("#youtube-cookies-file").change(async function () {
+				const form = new FormData();
+				form.append("cookies", this.files[0]);
+				this.value = "";
+				const r = await fetch("{{ url_for('settings.upload_youtube_cookies') }}", { method: "POST", body: form });
+				const body = await r.json().catch(() => ({}));
+				if (r.ok) showYoutubeCookies(true);
+				else showNotification(body.error || {{ _('Something went wrong! Your preferences were not changed') | tojson }}, "is-danger");
+			});
+
+			$("#youtube-cookies-remove").click(async function () {
+				const r = await fetch("{{ url_for('settings.remove_youtube_cookies') }}", { method: "DELETE" });
+				if (r.ok) showYoutubeCookies(false);
+			});
 
 			$(".user-preference-input").change(function() {
 				let val = $(this).val();
@@ -630,6 +652,19 @@
 					</span>
 					<input id="pref-enable-title-tidy" type="checkbox" class="user-preference-checkbox checkbox ml-4 mr-0" data-pref="enable_title_tidy" {% if enable_title_tidy == True %}checked{% endif %}>
 				</label>
+				<div class="panel-block px-5 py-3 is-block">
+					<span class="is-block">
+						{# MSG: Label for the YouTube cookies file the server downloads with when YouTube blocks it. #} {% trans %}YouTube cookies{% endtrans %}
+						<span id="youtube-cookies-status" class="is-block is-size-7 has-text-grey-light">{% if youtube_cookies %}{% trans %}Loaded: downloads go out signed in to that YouTube account.{% endtrans %}{% else %}{% trans %}For when YouTube blocks downloads. Export them from a browser signed in to YouTube, in cookies.txt format.{% endtrans %}{% endif %}</span>
+					</span>
+					<div class="buttons mt-2">
+						<label class="button is-small mb-0">
+							<input id="youtube-cookies-file" type="file" accept=".txt,text/plain" hidden>
+							{# MSG: Button that uploads a YouTube cookies file. #} {% trans %}Load{% endtrans %}
+						</label>
+						<button id="youtube-cookies-remove" class="button is-small mb-0{% if not youtube_cookies %} is-hidden{% endif %}">{# MSG: Button that deletes the uploaded YouTube cookies file. #} {% trans %}Remove{% endtrans %}</button>
+					</div>
+				</div>
 			</div>
 
 			<hr class="my-0">

@@ -143,6 +143,7 @@
     return row;
   }
 
+
   function loadSongs() {
     const params = {
       q: $("#song-search").val(),
@@ -259,7 +260,35 @@
     $("#meta-query").val([main, song.title].filter(Boolean).join(" - "));
     $("#meta-suggestions").empty();
     $("#meta-refresh-lyrics").prop("hidden", song.ai_status !== "ready").prop("disabled", false);
+    disarmDelete();
     $("#meta-modal").addClass("is-active");
+  }
+
+  // Deleting takes a second tap within a few seconds, like the mini player's skip:
+  // a stray tap must not cost a song and its karaoke stems.
+  let deleteArmed = 0;
+  function disarmDelete() {
+    clearTimeout(deleteArmed);
+    deleteArmed = 0;
+    $("#meta-delete").text(opts.labels.delete);
+  }
+
+  function deleteSong() {
+    if (!deleteArmed) {
+      $("#meta-delete").text(opts.labels.deleteConfirm);
+      deleteArmed = setTimeout(disarmDelete, 3000);
+      return;
+    }
+    disarmDelete();
+    $.ajax({ url: api(`/api/catalog/songs/${editing.id}`), method: "DELETE" })
+      .done(() => {
+        $("#meta-modal").removeClass("is-active");
+        window.showNotification(`${opts.labels.deleted}: ${$("#meta-title").val()}`, "is-warning");
+        refresh();
+      })
+      .fail((xhr) => {
+        window.showNotification((xhr.responseJSON && xhr.responseJSON.error) || opts.labels.deleteFailed, "is-danger");
+      });
   }
 
   function searchSuggestions() {
@@ -356,6 +385,7 @@
     $("#artist-filter-clear").off("click").on("click", () => filterByArtist(null));
     $("#meta-search").off("click").on("click", searchSuggestions);
     $("#meta-save").off("click").on("click", saveMeta);
+    $("#meta-delete").off("click").on("click", deleteSong);
     $("#meta-refresh-lyrics").off("click").on("click", function () {
       $(this).prop("disabled", true);
       $.post(api(`/api/ai/lyrics/${editing.id}/refresh`)).done(() => status(opts.labels.lyricsQueued));

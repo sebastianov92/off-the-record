@@ -355,3 +355,7 @@ body.ai-stage-on #now-playing .has-text-success > br {
     animation: none;
   }
 }
+/* Inside the webOS app (tv-bridge.js), the app's own dock replaces the splash menu. */
+html.otr-webos #menu {
+  display: none !important;
+}

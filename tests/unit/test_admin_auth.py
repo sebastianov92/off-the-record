@@ -94,3 +94,24 @@ class TestSessionToken:
         auth.set_password("hunter2")
 
         assert AdminAuth(PreferenceManager(config_path)).session_token == auth.session_token
+
+
+class TestDeviceToken:
+    """The header credential for the webOS app, which never sees the session cookie."""
+
+    def test_it_survives_a_restart(self, auth, config_path):
+        auth.set_password("hunter2")
+
+        assert AdminAuth(PreferenceManager(config_path)).device_token == auth.device_token
+
+    def test_changing_the_password_revokes_it(self, auth):
+        auth.set_password("hunter2")
+        before = auth.device_token
+        auth.set_password("hunter3")
+
+        assert auth.device_token != before
+
+    def test_it_is_not_the_cookie_value(self, auth):
+        auth.set_password("hunter2")
+
+        assert auth.device_token != auth.session_token

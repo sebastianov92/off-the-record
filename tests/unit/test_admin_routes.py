@@ -189,6 +189,56 @@ class TestApiLogin:
         assert client.post("/api/auth", json={"admin_password": ""}).status_code == 200
 
 
+class TestDeviceToken:
+    """The webOS app's door: a token in a header, since its frame gets no cookie."""
+
+    def test_a_login_can_ask_for_it(self, client, auth):
+        response = client.post("/api/auth", json={"admin_password": PASSWORD, "issue_token": True})
+
+        assert response.get_json() == {"authenticated": True, "token": auth.device_token}
+
+    def test_a_plain_login_does_not_hand_it_out(self, client):
+        response = client.post("/api/auth", json={"admin_password": PASSWORD})
+
+        assert "token" not in response.get_json()
+
+    def test_a_wrong_password_gets_no_token(self, client):
+        response = client.post("/api/auth", json={"admin_password": "wrong", "issue_token": True})
+
+        assert response.status_code == 401
+        assert "token" not in response.get_json()
+
+    def test_the_header_opens_a_host_only_route_without_a_cookie(self, client, auth):
+        assert (
+            client.get("/api/gated", headers={"X-Admin-Token": auth.device_token}).status_code
+            == 200
+        )
+
+    def test_a_wrong_header_is_refused(self, client):
+        assert client.get("/api/gated", headers={"X-Admin-Token": "guess"}).status_code == 403
+
+    def test_a_new_password_revokes_it(self, client, auth):
+        token = auth.device_token
+        auth.set_password("a-new-one")
+
+        assert client.get("/api/gated", headers={"X-Admin-Token": token}).status_code == 403
+
+    def test_a_preflight_is_never_granted(self, client):
+        """Without CORS, no other site can make a browser send the header."""
+        response = client.options(
+            "/api/gated",
+            headers={
+                "Origin": "http://evil.example",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "X-Admin-Token",
+            },
+        )
+
+        assert not any(
+            h.lower().startswith("access-control-allow") for h in response.headers.keys()
+        )
+
+
 class TestLoginThrottling:
     """Repeated wrong guesses from one caller lock it out, both doors."""
 

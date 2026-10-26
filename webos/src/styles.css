@@ -1,0 +1,580 @@
+/* Off the Record on the TV. Laid out for 1920x1080 (appinfo "resolution"); text is
+   never under 28 px, and everything stays inside a 5 % safe area. Panels over the
+   playing video are solid-ish glass with no backdrop-filter: a GPU blur over video
+   drops frames on a busy TV. */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: block;
+}
+
+:root {
+  --bg: #050507;
+  --panel: rgba(18, 18, 24, 0.88);
+  --panel-solid: #121218;
+  --line: rgba(255, 255, 255, 0.1);
+  --highlight: rgba(255, 255, 255, 0.07);
+  --text: #f5f5f7;
+  --muted: rgba(245, 245, 247, 0.62);
+  --accent: #ff5c93;
+  --accent-soft: rgba(255, 92, 147, 0.22);
+  --danger: #ff6b6b;
+  --ok: #5ee6a0;
+  --radius: 28px;
+  --safe-x: 96px;
+  --safe-y: 54px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 30px;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* The one focus look: the brand's pink ring and a lift, unmistakable from the sofa. */
+.is-focused {
+  outline: 4px solid var(--accent);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 10px var(--accent-soft);
+}
+
+/* ---- Setup ---------------------------------------------------------------- */
+.setup {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 70% at 20% 10%, rgba(74, 0, 224, 0.45), transparent 70%),
+    radial-gradient(50% 60% at 85% 90%, rgba(255, 111, 181, 0.32), transparent 70%),
+    var(--bg);
+}
+
+.setup-card {
+  width: 980px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.setup-logo {
+  width: 520px;
+  align-self: center;
+  margin-bottom: 24px;
+}
+
+.setup h1 {
+  margin: 0;
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 30px;
+  line-height: 1.4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field label {
+  color: var(--muted);
+  font-size: 28px;
+}
+
+.field input {
+  height: 96px;
+  padding: 0 32px;
+  border-radius: 24px;
+  border: 2px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font: inherit;
+  font-size: 40px;
+}
+
+.field input:focus {
+  outline: none;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 30px;
+  margin: 0;
+}
+
+.button {
+  height: 96px;
+  padding: 0 48px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 34px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button.is-primary {
+  background: var(--text);
+  color: #0b0b10;
+}
+
+.button:disabled {
+  opacity: 0.4;
+}
+
+.recent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.recent span {
+  color: var(--muted);
+  font-size: 28px;
+  margin-right: 8px;
+}
+
+.chip {
+  white-space: nowrap;
+  height: 72px;
+  padding: 0 32px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 28px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chip.is-selected {
+  background: var(--text);
+  color: #0b0b10;
+  border-color: transparent;
+}
+
+/* ---- Player --------------------------------------------------------------- */
+.player {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+
+.player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.player iframe.takes-input {
+  pointer-events: auto;
+}
+
+.banner {
+  position: absolute;
+  top: var(--safe-y);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 20px 40px;
+  border-radius: 999px;
+  background: var(--panel);
+  box-shadow: inset 0 1px 0 var(--highlight);
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.banner.is-warning {
+  color: #ffd27a;
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  text-align: center;
+}
+
+.cover .stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  max-width: 1200px;
+}
+
+.cover h2 {
+  margin: 0;
+  font-size: 48px;
+}
+
+.row {
+  display: flex;
+  gap: 24px;
+}
+
+/* ---- Dock ----------------------------------------------------------------- */
+.dock {
+  position: absolute;
+  left: var(--safe-x);
+  right: var(--safe-x);
+  bottom: var(--safe-y);
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 40px;
+  padding: 40px 48px;
+  border-radius: 40px;
+  background: var(--panel);
+  box-shadow: inset 0 1px 0 var(--highlight), 0 30px 80px rgba(0, 0, 0, 0.55);
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
+}
+
+.dock.is-hidden {
+  opacity: 0;
+  transform: translateY(40px);
+  pointer-events: none;
+}
+
+.now {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+  min-width: 0;
+}
+
+.now-title {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.now-singer,
+.now-next {
+  color: var(--muted);
+  font-size: 30px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transport {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+.round {
+  width: 104px;
+  height: 104px;
+  border: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  flex: none;
+}
+
+.round.is-main {
+  width: 132px;
+  height: 132px;
+  background: var(--text);
+  color: #0b0b10;
+}
+
+.round svg {
+  width: 44px;
+  height: 44px;
+}
+
+.round.is-main svg {
+  width: 56px;
+  height: 56px;
+}
+
+.round.is-confirming {
+  width: auto;
+  padding: 0 32px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #0b0b10;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.slider {
+  display: grid;
+  grid-template-columns: 260px 1fr 110px;
+  align-items: center;
+  gap: 28px;
+  height: 76px;
+  padding: 0 28px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.slider.is-disabled {
+  opacity: 0.38;
+}
+
+.slider-label {
+  font-size: 30px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.slider-track {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.slider-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: var(--text);
+}
+
+.slider-track.is-centered .slider-fill {
+  left: auto;
+}
+
+.slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--text);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.slider-value {
+  text-align: right;
+  font-size: 28px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter {
+  position: relative;
+  height: 10px;
+  margin: 0 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.meter::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: calc(var(--level, 0) * 100%);
+  background: linear-gradient(90deg, var(--ok), #ffd27a 75%, var(--danger));
+  transition: width 90ms linear;
+}
+
+.chips {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 0 28px;
+}
+
+.mic-status {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 28px;
+}
+
+/* ---- Side panels (voice, output) ------------------------------------------ */
+.panel {
+  position: absolute;
+  top: var(--safe-y);
+  right: var(--safe-x);
+  bottom: var(--safe-y);
+  width: 820px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 40px;
+  border-radius: 40px;
+  background: var(--panel);
+  box-shadow: inset 0 1px 0 var(--highlight), 0 30px 80px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.panel h2 {
+  margin: 0 0 12px 28px;
+  font-size: 44px;
+}
+
+.panel .section {
+  margin: 12px 0 0 28px;
+  color: var(--muted);
+  font-size: 28px;
+}
+
+.panel .slider {
+  grid-template-columns: 200px 1fr 110px;
+}
+
+.panel .chips {
+  flex-wrap: wrap;
+  row-gap: 12px;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 28px;
+  border-radius: 28px;
+  cursor: pointer;
+}
+
+.option strong {
+  font-size: 32px;
+}
+
+.option span {
+  color: var(--muted);
+  font-size: 28px;
+}
+
+.option.is-selected strong::after {
+  content: '  ✓';
+  color: var(--accent);
+}
+
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 76px;
+  padding: 0 28px;
+  border-radius: 999px;
+  font-size: 30px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle em {
+  font-style: normal;
+  color: var(--muted);
+}
+
+/* ---- Dialogs, toast -------------------------------------------------------- */
+.scrim {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.dialog {
+  width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 56px;
+  border-radius: 40px;
+  background: var(--panel-solid);
+  box-shadow: inset 0 1px 0 var(--highlight), 0 40px 100px rgba(0, 0, 0, 0.6);
+}
+
+.dialog h2 {
+  margin: 0;
+  font-size: 48px;
+}
+
+.toast {
+  position: absolute;
+  top: var(--safe-y);
+  right: var(--safe-x);
+  padding: 22px 36px;
+  border-radius: 999px;
+  background: var(--panel-solid);
+  box-shadow: inset 0 1px 0 var(--highlight);
+  font-size: 30px;
+  font-weight: 600;
+}
+
+/* ---- Diagnostics ----------------------------------------------------------- */
+.diag {
+  position: absolute;
+  inset: 0;
+  padding: var(--safe-y) var(--safe-x);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--bg);
+}
+
+.diag h1 {
+  margin: 0;
+  font-size: 52px;
+}
+
+.diag dl {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 18px 40px;
+  margin: 0;
+}
+
+.diag dt {
+  color: var(--muted);
+}
+
+.diag dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}

@@ -1,0 +1,86 @@
+# Off the Record for webOS (webos/): tests, builds the IPK and, on karaoke-ai,
+# publishes it. Each version gets its own release, webos-v<version> (skipped when
+# it already exists, so bump webos/appinfo.json and package.json to release). The
+# Homebrew Channel manifest and icon go to the fixed pre-release "webos-feed",
+# which LumiOS's feed links to, so a new version reaches TVs without a LumiOS release.
+name: webOS app
+
+on:
+  push:
+    branches: [karaoke-ai]
+    paths:
+      - "webos/**"
+      - "pikaraoke/static/ai/tv-bridge.js"
+      - "pikaraoke/static/ai/pitch-clock.js"
+      - "pikaraoke/static/brand/**"
+      - ".github/workflows/webos.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: webos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: webos/package-lock.json
+
+      - run: npm ci
+
+      - run: npm test
+
+      # The microphone engine is a static ARM binary, built in an emulated container.
+      - name: Set up ARM emulation
+        if: hashFiles('webos/engine/docker-build.sh') != ''
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build the microphone engine
+        if: hashFiles('webos/engine/docker-build.sh') != ''
+        run: sh engine/docker-build.sh
+
+      - name: Package
+        id: package
+        run: npm run package
+
+      - name: Browser tests
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:browser
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webos-release
+          path: |
+            webos/dist/*.ipk
+            webos/dist/sha256sums
+            webos/dist/*.manifest.json
+            webos/dist/com.dezik.offtherecord.png
+
+      - name: Publish
+        if: github.ref == 'refs/heads/karaoke-ai'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.package.outputs.tag }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "$TAG is already published; bump the version to release again."
+            exit 0
+          fi
+          gh release create "$TAG" dist/*.ipk dist/sha256sums \
+            --target "$GITHUB_SHA" --title "Off the Record for webOS ${TAG#webos-v}" \
+            --notes "Install from Homebrew Channel (LumiOS repository) or with the IPK below."
+          if ! gh release view webos-feed >/dev/null 2>&1; then
+            gh release create webos-feed --prerelease --latest=false --title "webOS feed" \
+              --notes "Homebrew Channel manifest for the newest webOS release. Updated by CI."
+          fi
+          gh release upload webos-feed dist/com.dezik.offtherecord.manifest.json \
+            dist/com.dezik.offtherecord.png --clobber

@@ -34,6 +34,11 @@ le agregan enganches chicos, para que traer actualizaciones de upstream siga sie
 | Admin con contraseña: Conversiones, Play History, Sessions y Settings solo para el admin (ni se ven en el menú para el resto); inicio y cierre de sesión desde el menú lateral, volviendo a la misma página; sin contraseña puesta todos son admin, como en upstream | `templates/partials/admin_login.html`, `templates/base.html`, `routes/admin.py` |
 | Mini reproductor fijo abajo en todas las páginas: reiniciar, pausa, siguiente (reiniciar y pasar piden un segundo toque, sin diálogos del navegador), volumen de música y de voz | `templates/partials/mini_player.html`, `static/ai/miniplayer.js` |
 | Diseño espacial (Spatial UI, estilo visionOS) en la app del celular: un ambiente de luces de color que se mueve detrás, ventana de vidrio esmerilado con borde iluminado, navegación y mini reproductor como cápsulas flotantes (la barra y el menú ☰ en negro sólido; dentro del menú de la tele la página va sobre negro, sin las luces), campos y pestañas hundidos, botones cápsula (la acción principal en blanco), filas que se elevan al pasar el puntero; Inter incluida; respeta reducir movimiento y transparencia; en pantallas táctiles todo control mide 44 px o más, los campos usan 16 px (sin zoom en iPhone) y el vidrio desenfoca menos; la pantalla de la tele no cambia | `static/skin.css`, `static/fonts/inter/` |
+| App para la tele LG (webOS): la pantalla de karaoke con controles por control remoto (reiniciar, pausa, siguiente, volúmenes de música y voz guía), micrófono USB con un motor nativo (`otr-mic`: filtro, expansor, EQ de 5 bandas con estilos, compresor, de-esser, eco, reverb, anti-acople, limitador), salida por la tele o un parlante USB, puntaje con el tono del motor y calibración. Ver `docs/WEBOS.md` | `webos/`, `static/ai/tv-bridge.js`, `static/ai/pitch-clock.js`, `static/ai/buffer-guide.js` (la voz guía por Web Audio en la tele, en WAV: `ai/routes.py` `?format=wav`), `static/ai/score.js` (`useFeed`, `feed`), `static/ai/splash.js` |
+| Antes de descargar, busca la canción en la biblioteca: el mismo video de YouTube, o la misma canción (artista y título según iTunes); si está, la pone en cola y no descarga ni procesa nada | `lib/download_manager.py` (`_library_copy`), `lib/song_list.py` (`with_youtube_id`), `catalog/service.py` (`find_in_library`), `catalog/store.py` (`find_song`), `karaoke.py` (`announce_library_copy`) |
+| Cuando YouTube bloquea la conexión (pide confirmar que no es un bot, o 429) no reintenta y lo explica; Ajustes acepta un cookies.txt de una cuenta de YouTube (solo admin, guardado privado) que yt-dlp usa en descargas, búsquedas y vistas previas | `lib/download_manager.py`, `lib/youtube_dl.py` (`youtube_cookies_file`), `routes/settings.py`, `templates/settings.html` |
+| Borrar una canción desde la Biblioteca (en su ventana de edición, solo admin, con segundo toque): se van también sus pistas de karaoke y sus créditos; no deja borrar una que está en cola o sonando | `catalog/routes.py` (`delete_song`), `static/catalog/library.js`, `templates/library.html` |
+| La app de la tele guarda en la tele copias de las próximas 5 canciones (la que suena y la cola), borra las que ya se cantaron y las toca desde la tele | `routes/tv_api.py`, `lib/stream_manager.py` (`direct_source`), `karaoke.py` (`now_playing_file`), `static/ai/tv-bridge.js`, `webos/tv/otr-files.py` |
 | Textos en español | `translations/es_VE/LC_MESSAGES/messages.po` (bloque al final) |
 
 ## Archivos nuevos
@@ -48,9 +53,10 @@ le agregan enganches chicos, para que traer actualizaciones de upstream siga sie
 - `pikaraoke/static/catalog/library.js`, `pikaraoke/static/skin.css`, `pikaraoke/static/fonts/inter/` (Inter, SIL OFL 1.1).
 - `pikaraoke/templates/library.html`, `pikaraoke/templates/processing.html`, `pikaraoke/templates/partials/mini_player.html`, `pikaraoke/templates/partials/admin_login.html`, `pikaraoke/static/ai/avatars.js`, `pikaraoke/static/blobatar/` (blobatar 2.7.0, MIT), `pikaraoke/static/brand/` (logos).
 - `pikaraoke/static/ai/miniplayer.js`.
+- `webos/`: la app de la tele (ver `docs/WEBOS.md`), con su motor `webos/engine/` (C; tinyalsa BSD-3 y jsmn MIT en `vendor/`) y `webos/tv/otr-mic.sh`; `pikaraoke/static/ai/tv-bridge.js`, `pitch-clock.js` y `buffer-guide.js` (el lado del servidor); `.github/workflows/webos.yml` (publica el IPK y el manifest del feed).
 - Docker para la mini PC (ver `docs/MINIPC.md`): `build_scripts/docker/Dockerfile.ai` (Debian, torch solo CPU, ffmpeg estático con rubberband, node; solo `linux/amd64`), `entrypoint.sh`, `publish_ai.sh`, `off-the-record.casaos.yml`; `pikaraoke/static/brand/app-icon.png` (ícono de CasaOS y del iPhone).
 - `tools/make_test_song.py`: canción sintética con tiempos conocidos (letra original).
-- Pruebas: `tests/unit/test_ai_guide.py`, `tests/unit/test_catalog.py`, `tests/unit/test_ai_pitch.py`, `tests/unit/test_ai_lyrics.py`, `tests/unit/test_ai_align.py`, `tests/js/ai_scoring.test.js`.
+- Pruebas: `tests/js/pitch_clock.test.js`, `tests/js/ai_score_feed.test.js`, `tests/js/tv_bridge.test.js`, `tests/unit/test_ai_guide.py`, `tests/unit/test_catalog.py`, `tests/unit/test_ai_pitch.py`, `tests/unit/test_ai_lyrics.py`, `tests/unit/test_ai_align.py`, `tests/js/ai_scoring.test.js`.
 
 Datos que escribe fuera del repo: `~/.pikaraoke/ai/<song_id>/` (pistas, letra, melodía) y
 `~/.pikaraoke/catalog/covers/` (carátulas). Fuera de `songs/` a propósito: el escáner de pikaraoke
@@ -85,12 +91,15 @@ recorre todas las subcarpetas y tomaría las pistas como canciones.
 | `templates/home.html` | Reordenada en tarjetas (lo que suena y sus controles, lo que sigue, volúmenes, pantalla de karaoke, tono); avatar junto a quien canta y quien sigue; reiniciar y saltar con segundo toque |
 | `templates/files.html` | Etiquetas de estado de IA y botón «Procesar» en la vista de archivos |
 | `templates/home.html` | Voz guía, desfase de la letra y «Otro fondo» |
-| `templates/splash.html` | Escenario de IA, scripts de puntaje, desglose y logo en la pantalla de puntaje |
+| `templates/splash.html` | Escenario de IA, scripts de puntaje, desglose y logo en la pantalla de puntaje; el puente de la app webOS |
 | `templates/rankings.html` | Sección «Mejores puntajes» |
 | `static/js/splash.js` | `endSong` muestra puntaje solo si hubo canto medido |
 | `static/score.js`, `static/score.css` | El puntaje viene del micrófono (se quitó el azar) y muestra el desglose |
 | `static/fireworks.js` | Los fuegos artificiales del puntaje son solo blancos |
-| `.dockerignore` | Deja fuera del contexto de Docker `songs/`, `node_modules/` y `branding/` |
+| `.dockerignore` | Deja fuera del contexto de Docker `songs/`, `node_modules/`, `branding/` y `webos/` |
+| `lib/admin_auth.py`, `lib/current_app.py`, `routes/auth_api.py` | Token de dispositivo para la app de la tele: `POST /api/auth` con `issue_token` lo entrega, `is_admin()` acepta la cabecera `X-Admin-Token` (deriva del token de sesión: cambiar la contraseña lo revoca; sin CORS, ningún otro sitio puede mandarla) |
+| `routes/controller.py` | `/api/volume` limitado a 0–1 (la splash lo asigna a `video.volume`, que falla fuera de ese rango) |
+| `vitest.config.js` | Cobertura también del puente webOS |
 | `static/screensaver.js`, `static/screensaver.css` | El salvapantallas es solo el isologo rebotando, sin la caja de colores ni el QR |
 | `translations/es_VE/.../messages.po` | ~80 textos nuevos al final del archivo, sin tocar los existentes |
 | `tests/conftest.py`, `tests/unit/test_auth_gate.py`, `tests/unit/test_metadata_providers.py`, `tests/unit/test_queue_manager.py`, `tests/js/splash.test.js` | Stubs y listas de endpoints públicos al día; pruebas de la cola y del puntaje |
@@ -126,6 +135,6 @@ git merge upstream/master
 ## Pendiente
 
 - Publicar la imagen en GHCR e instalarla en la mini PC (`docs/MINIPC.md`); probada solo en Docker de la Mac (emulado).
-- Cliente webOS (volúmenes de música, guía y micrófono; ecualizador).
+- App webOS: probarla en la tele (latencia por la tele y por USB, CPU del motor, que hw:0,5 suene junto a la música, calibración del puntaje) y publicar el primer release.
 - Probar el puntaje con un micrófono real.
 - Si la sincronía con anclajes no alcanza en canciones rápidas: alineación forzada con wav2vec2/MMS.

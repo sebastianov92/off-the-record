@@ -261,6 +261,18 @@ class CatalogStore:
         rows = self._db.query("SELECT * FROM songs WHERE id = ?", (song_id,))
         return dict(rows[0]) if rows else None
 
+    def find_song(self, artist: str, title: str) -> str | None:
+        """The file of a song with this title by this artist, spelling and case aside."""
+        want_artist, want_title = artist_key(artist), fold(title).strip()
+        for r in self._db.query(
+            "SELECT s.file_path, s.title, ar.name FROM songs s "
+            "JOIN song_artists sa ON sa.song_id = s.id JOIN artists ar ON ar.id = sa.artist_id "
+            "WHERE s.title IS NOT NULL"
+        ):
+            if fold(r["title"]).strip() == want_title and artist_key(r["name"]) == want_artist:
+                return r["file_path"]
+        return None
+
     def songs_to_organize(self) -> list[dict]:
         rows = self._db.query(
             "SELECT id, file_path FROM songs WHERE metadata_status IS NULL "

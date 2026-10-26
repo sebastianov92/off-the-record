@@ -4,6 +4,9 @@
 // the singer can blend in, kept in step with the main player.
 (function () {
   const DRIFT = 0.15; // seconds the guide may wander before it is pulled back
+  // The TV app's guide (buffer-guide.js) lands within a few ms of where it is put,
+  // so it is held closer: 40 ms off is already heard as a second voice.
+  const DRIFT_TV = 0.04;
   // The idle screen, between songs: Off the Record's flow gradient in indigo, violet and
   // light pink, in place of a background video.
   const IDLE = { style: "flow", palette: ["#4A00E0", "#8E2DE2", "#FF6FB5"] };
@@ -42,7 +45,12 @@
   };
   const STEP_ORDER = ["sway", "hop", "nod", "look"];
 
-  const guide = new Audio();
+  // In the LG TV app (tv-bridge.js) a second media player would take the TV's one
+  // media sound output from the song, and the TV pauses the song: there the guide
+  // plays through Web Audio (buffer-guide.js), and loads only once someone turns
+  // it up, since it is decoded whole.
+  const tvApp = () => document.documentElement.classList.contains("otr-webos");
+  const guide = tvApp() ? window.AiBufferGuide.createBufferGuide() : new Audio();
   guide.preload = "auto";
   let current = null; // now_playing_ai of the song on screen
   let guideVolume = 0;
@@ -56,7 +64,25 @@
 
   const player = () => document.getElementById("video");
 
+  let guideUrl = null;
+
+  // The TV app decodes its guide whole before it plays; PCM decodes at once.
+  function guideSource(url) {
+    if (!tvApp()) return url;
+    const wav = new URL(url, window.location.href);
+    wav.searchParams.set("format", "wav");
+    return wav.pathname + wav.search;
+  }
+
+  function ensureGuide() {
+    if (guideUrl && guide.getAttribute("src") !== guideUrl) {
+      guide.src = guideUrl;
+      guide.load();
+    }
+  }
+
   function applyVolume() {
+    if (guideVolume > 0) ensureGuide();
     const video = player();
     const master = video ? video.volume : 1;
     guide.volume = Math.max(0, Math.min(1, (guideVolume / 100) * master));
@@ -67,7 +93,7 @@
   function sync(play) {
     const video = player();
     if (!video || !current || guideVolume === 0) return;
-    if (Math.abs(guide.currentTime - video.currentTime) > DRIFT) {
+    if (Math.abs(guide.currentTime - video.currentTime) > (tvApp() ? DRIFT_TV : DRIFT)) {
       guide.currentTime = video.currentTime;
     }
     if (play && guide.paused) guide.play().catch(() => {});
@@ -283,6 +309,7 @@
     window.aiScore.load(info);
     if (!info) {
       hideStage();
+      guideUrl = null;
       guide.pause();
       guide.removeAttribute("src");
       guide.load();
@@ -290,8 +317,13 @@
     }
     guideVolume = info.guide_volume || 0;
     if (!sameGuide) {
-      guide.src = info.guide_url;
-      guide.load();
+      guideUrl = guideSource(info.guide_url);
+      if (tvApp() && guideVolume === 0) {
+        guide.removeAttribute("src");
+      } else {
+        guide.src = guideUrl;
+        guide.load();
+      }
     }
     showStage(info);
     applyVolume();
@@ -311,8 +343,10 @@
   }
 
   $(function () {
-    guide.id = "ai-guide";
-    document.body.append(guide);
+    if (!tvApp()) {
+      guide.id = "ai-guide";
+      document.body.append(guide);
+    }
     buildStage();
     buildIdle();
     // The TV's menu shows the app in an iframe over the TV's own background: there

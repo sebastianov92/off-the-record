@@ -61,9 +61,9 @@
     $("#mini-skip").on("click", function () {
       confirmTap(this, "/api/skip");
     });
-    $("#mini-pause").on("click", () => {
-      $.post(api(state && state.is_paused ? "/api/play" : "/api/pause"));
-    });
+    // The bar shows only while a song is loaded, so the button always toggles it;
+    // /api/play would only start a song waiting for a manual start.
+    $("#mini-pause").on("click", () => $.post(api("/api/pause")));
     $("#mini-volume-toggle").on("click", function () {
       const open = $("#mini-volumes").toggleClass("is-hidden").hasClass("is-hidden") === false;
       this.setAttribute("aria-expanded", String(open));

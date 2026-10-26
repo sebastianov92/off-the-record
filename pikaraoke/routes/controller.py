@@ -65,10 +65,15 @@ def restart():
 
 @controller_bp.route("/api/volume/<volume>", methods=["POST"])
 def volume(volume):
-    """Set the playback volume."""
+    """Set the playback volume, from 0 to 1."""
     k = get_karaoke_instance()
-    broadcast_event("volume", volume)
-    k.volume_change(float(volume))
+    try:
+        # Clamped: the splash assigns it to video.volume, which throws outside 0..1.
+        level = min(1.0, max(0.0, float(volume)))
+    except ValueError:
+        return jsonify({"error": "Volume must be a number"}), 400
+    broadcast_event("volume", level)
+    k.volume_change(level)
     return jsonify({"success": True})
 
 

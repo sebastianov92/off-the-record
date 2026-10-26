@@ -57,6 +57,8 @@ def song_manager():
     """Create a mock SongManager."""
     mock = MagicMock()
     mock.songs = MagicMock()
+    # An empty library: no request finds its song already there.
+    mock.songs.with_youtube_id.return_value = None
     return mock
 
 
@@ -483,6 +485,64 @@ class TestDownloadManagerRetry:
             download_manager.download_errors[0]["error"]
             == "unable to download video data: HTTP Error 403: Forbidden"
         )
+
+    @patch("flask_babel._", side_effect=lambda x: x)
+    @patch("subprocess.Popen")
+    @patch("pikaraoke.lib.download_manager.build_ytdl_download_command")
+    def test_a_youtube_block_is_not_retried(
+        self, mock_build_cmd, mock_popen, mock_gettext, download_manager
+    ):
+        """Retrying a bot check only deepens it: one attempt, then a card that says why."""
+        mock_build_cmd.return_value = ["yt-dlp", "url"]
+        lines = [
+            "WARNING: [youtube] x: Unable to download webpage: HTTP Error 429: Too Many Requests\n",
+            "ERROR: [youtube] x: Sign in to confirm you’re not a bot. Use --cookies\n",
+        ]
+        process = MagicMock()
+        process.stdout.readline.side_effect = lines + [""]
+        process.poll.return_value = 1
+        mock_popen.return_value = process
+
+        download_manager.queue_download("https://youtube.com/watch?v=fAzCnCwJO5c", title="Blocked")
+        runs = self._drain(download_manager)
+
+        assert runs == 1
+        assert "load YouTube cookies in Settings" in download_manager.download_errors[0]["error"]
+
+    @patch("flask_babel._", side_effect=lambda x: x)
+    @patch("subprocess.Popen")
+    def test_a_video_already_in_the_library_is_queued_not_downloaded(
+        self, mock_popen, mock_gettext, download_manager, song_manager, queue_manager, events
+    ):
+        found = []
+        events.on("song_in_library", lambda path, video_id: found.append((path, video_id)))
+        song_manager.songs.with_youtube_id.return_value = "/songs/Song---dQw4w9WgXcQ.m4a"
+
+        rc = download_manager._execute_download(make_request(enqueue=True, user="Ana"))
+
+        assert rc == 0
+        mock_popen.assert_not_called()
+        queue_manager.enqueue.assert_called_once_with(
+            "/songs/Song---dQw4w9WgXcQ.m4a", "Ana", log_action=False
+        )
+        assert found == [("/songs/Song---dQw4w9WgXcQ.m4a", "dQw4w9WgXcQ")]
+
+    @patch("flask_babel._", side_effect=lambda x: x)
+    @patch("subprocess.Popen")
+    def test_the_same_song_from_another_video_is_not_downloaded(
+        self, mock_popen, mock_gettext, download_manager, queue_manager
+    ):
+        download_manager.find_in_library = lambda title: (
+            "/songs/Jeanette - Frente a Frente.m4a" if "Frente a Frente" in title else None
+        )
+
+        rc = download_manager._execute_download(
+            make_request(title="Jeanette — Frente a Frente [Letra]", enqueue=True)
+        )
+
+        assert rc == 0
+        mock_popen.assert_not_called()
+        queue_manager.enqueue.assert_called_once()
 
     @patch("flask_babel._", side_effect=lambda x: x)
     def test_retry_error_requeues_and_clears(self, mock_gettext, download_manager):

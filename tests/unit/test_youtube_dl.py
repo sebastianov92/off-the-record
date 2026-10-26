@@ -114,6 +114,16 @@ class TestBuildYtdlDownloadCommand:
         assert "https://www.youtube.com/watch?v=test123" in cmd
 
     @patch("pikaraoke.lib.youtube_dl.get_installed_js_runtime", return_value=None)
+    def test_uses_uploaded_youtube_cookies(self, mock_js, tmp_path):
+        """With a cookies file from Settings, yt-dlp downloads signed in."""
+        with patch("pikaraoke.lib.youtube_dl.get_data_directory", return_value=str(tmp_path)):
+            without = build_ytdl_download_command("https://www.youtube.com/watch?v=x", "/songs")
+            (tmp_path / "youtube-cookies.txt").write_text("# Netscape HTTP Cookie File\n")
+            cmd = build_ytdl_download_command("https://www.youtube.com/watch?v=x", "/songs")
+        assert "--cookies" not in without
+        assert cmd[cmd.index("--cookies") + 1] == str(tmp_path / "youtube-cookies.txt")
+
+    @patch("pikaraoke.lib.youtube_dl.get_installed_js_runtime", return_value=None)
     def test_high_quality_format(self, mock_js):
         """Test that high quality uses correct format string.
 

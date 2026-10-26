@@ -2594,3 +2594,51 @@ msgstr "No se pudo ampliar: Off the Record no tiene permiso para cambiar el tama
 
 msgid "Karaoke screen"
 msgstr "Pantalla de karaoke"
+
+msgid "YouTube is blocking downloads from this connection. Wait a few hours, or load YouTube cookies in Settings."
+msgstr "YouTube está bloqueando las descargas desde esta conexión. Espera unas horas o carga las cookies de YouTube en Ajustes."
+
+msgid "That is not a cookies.txt file."
+msgstr "Ese archivo no es un cookies.txt."
+
+msgid "YouTube cookies"
+msgstr "Cookies de YouTube"
+
+msgid "Loaded: downloads go out signed in to that YouTube account."
+msgstr "Cargadas: las descargas salen con la sesión de esa cuenta de YouTube."
+
+msgid "For when YouTube blocks downloads. Export them from a browser signed in to YouTube, in cookies.txt format."
+msgstr "Para cuando YouTube bloquea las descargas. Expórtalas desde un navegador con la sesión de YouTube abierta, en formato cookies.txt."
+
+msgid "Load"
+msgstr "Cargar"
+
+msgid "Remove"
+msgstr "Quitar"
+
+#, python-format
+msgid "Already in the library, queued: %s"
+msgstr "Ya está en la biblioteca, en cola: %s"
+
+#, python-format
+msgid "Already in the library: %s"
+msgstr "Ya está en la biblioteca: %s"
+
+msgid "This song is queued or playing."
+msgstr "Esta canción está en la cola o sonando."
+
+#, python-format
+msgid "Error deleting file: %s"
+msgstr "Error al borrar el archivo: %s"
+
+msgid "Delete"
+msgstr "Borrar"
+
+msgid "Delete?"
+msgstr "¿Borrar?"
+
+msgid "Deleted"
+msgstr "Borrada"
+
+msgid "The song could not be deleted."
+msgstr "No se pudo borrar la canción."

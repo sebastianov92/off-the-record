@@ -1,0 +1,16 @@
+{
+  "id": "com.dezik.offtherecord",
+  "version": "0.1.0",
+  "vendor": "Dezik",
+  "type": "web",
+  "main": "index.html",
+  "title": "Off the Record",
+  "icon": "icon.png",
+  "largeIcon": "icon-large.png",
+  "splashBackground": "splash.png",
+  "resolution": "1920x1080",
+  "iconColor": "#111111",
+  "requiredACG": ["lunabus.query"],
+  "disableBackHistoryAPI": true,
+  "handlesRelaunch": false
+}

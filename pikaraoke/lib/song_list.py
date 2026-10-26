@@ -167,6 +167,17 @@ class SongList:
             logging.error(f"Error searching for song by ID {video_id} in {directory}: {e}")
         return None
 
+    def with_youtube_id(self, video_id: str) -> str | None:
+        """The library song downloaded from this YouTube video, in any folder."""
+        bracketed, dashed = f"[{video_id}].", f"---{video_id}."
+        with self._lock:
+            songs = list(self._songs)
+        for path in songs:
+            name = os.path.basename(path)
+            if dashed in name or bracketed in name:
+                return path
+        return None
+
     def __contains__(self, song_path: str) -> bool:
         """Check if a song is in the list. O(1) average."""
         with self._lock:

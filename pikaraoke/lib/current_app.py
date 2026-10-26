@@ -1,5 +1,6 @@
 """Flask application context utilities for PiKaraoke."""
 
+import hmac
 import logging
 from typing import Any
 
@@ -15,10 +16,16 @@ def is_admin() -> bool:
     """Whether this request is authenticated as the admin.
 
     With no admin password set everyone is an admin -- the right default for a box
-    on a home TV. Otherwise it takes a signed session established by /auth.
+    on a home TV. Otherwise it takes a signed session established by /auth, or the
+    device token in an X-Admin-Token header (the webOS app, which has no cookie).
+    A custom header always needs a CORS preflight, which this server never grants,
+    so another site cannot make a browser send it.
     """
     auth = get_admin_auth()
-    return not auth.is_password_set() or session.get("admin") == auth.session_token
+    if not auth.is_password_set() or session.get("admin") == auth.session_token:
+        return True
+    token = request.headers.get("X-Admin-Token", "")
+    return bool(token) and hmac.compare_digest(token, auth.device_token)
 
 
 def get_karaoke_instance() -> Karaoke:

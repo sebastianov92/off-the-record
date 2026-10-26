@@ -18,6 +18,13 @@ auth_api_bp = Blueprint("auth_api", __name__)
 
 class LoginSchema(Schema):
     admin_password = fields.String(required=True, metadata={"description": "The admin password"})
+    issue_token = fields.Boolean(
+        load_default=False,
+        metadata={
+            "description": "Also return a device token, sent back as the X-Admin-Token header "
+            "by clients that cannot keep the session cookie (the webOS app)"
+        },
+    )
 
 
 @auth_api_bp.route("/api/auth")
@@ -43,6 +50,8 @@ def login(credentials):
         return jsonify({"authenticated": True})
     outcome = log_in(credentials["admin_password"])
     if outcome.granted:
+        if credentials["issue_token"]:
+            return jsonify({"authenticated": True, "token": get_admin_auth().device_token})
         return jsonify({"authenticated": True})
     if outcome.throttled:
         response = jsonify({"error": "Too many attempts"})

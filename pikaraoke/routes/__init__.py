@@ -29,6 +29,7 @@ from pikaraoke.routes.sessions_api import sessions_api_bp
 from pikaraoke.routes.settings import settings_bp
 from pikaraoke.routes.splash import splash_bp
 from pikaraoke.routes.stream import stream_bp
+from pikaraoke.routes.tv_api import tv_api_bp
 
 # Shown in /apidocs when swagger is enabled. Membership is audience, not medium:
 # `/api` says which refusal the gate sends, this says what a stranger should
@@ -64,4 +65,5 @@ INTERNAL_BLUEPRINTS = [
     batch_song_renamer_bp,
     ai_bp,
     catalog_bp,
+    tv_api_bp,
 ]

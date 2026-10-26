@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- A stand-in for the server's /splash: the real tv-bridge.js and
+         pitch-clock.js over a fake socket, score and player. -->
+    <script>
+      window.pikaraokeConfig = { basePath: '' };
+      window.recorded = { feeds: [], useFeed: [] };
+      window.aiScore = {
+        useFeed: (present) => recorded.useFeed.push(present),
+        feed: (frames) => recorded.feeds.push(frames),
+      };
+      const handlers = {};
+      var socket = { on: (name, fn) => (handlers[name] = fn) };
+      window.fireSocket = (name, data) => handlers[name] && handlers[name](data);
+    </script>
+  </head>
+  <body style="background: #123">
+    <video id="video"></video>
+    <script src="/static/ai/pitch-clock.js"></script>
+    <script src="/static/ai/tv-bridge.js"></script>
+  </body>
+</html>

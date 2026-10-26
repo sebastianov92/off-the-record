@@ -10,6 +10,7 @@
   let micOn = false; // micReady settled true: frames are coming in
   let current = null; // {songId, ref, lineStarts}
   let frames = [];
+  let feeding = false; // the webOS app sends the frames; never open this page's mic
 
   const player = () => document.getElementById("video");
 
@@ -61,7 +62,7 @@
     const song = current;
     $.getJSON(info.pitch_url, (ref) => (song.ref = ref));
     $.getJSON(info.lyrics_url, (doc) => (song.lineStarts = (doc.lines || []).map((l) => l.start)));
-    openMic();
+    if (!feeding) openMic();
   }
 
   // Score the song that just ended; null when there is nothing honest to show.
@@ -99,19 +100,25 @@
     return AiScoring.mood(current.ref, frames, now);
   }
 
-  // Any other audio source can be scored the same way (the webOS client feeds its
-  // USB microphone through here); it must belong to context().
-  async function attach(sourceNode) {
-    if (!detector) await openDetector();
-    sourceNode.connect(detector);
-    micReady = Promise.resolve(true);
-    micOn = true;
+  // The webOS app: on the TV this page's microphone only hears silence (LG routes
+  // every browser capture to a muted source), so the app's native engine reads the
+  // USB microphone and sends pitch frames instead. `present` is whether it has one:
+  // without a microphone there is no score, as everywhere else.
+  function useFeed(present) {
+    feeding = true;
+    micOn = !!present;
+    micReady = Promise.resolve(micOn);
   }
 
-  async function audioContext() {
-    if (!detector) await openDetector();
-    return context;
+  // Frames already placed on the song's clock (pitch-clock.js): [{t, midi}].
+  function feed(list) {
+    const video = player();
+    if (!micOn || !current || !current.ref || !video || video.paused) return;
+    for (const frame of list) {
+      // mood() walks back from the newest frame, so keep them in time order.
+      if (!frames.length || frame.t > frames[frames.length - 1].t) frames.push(frame);
+    }
   }
 
-  window.aiScore = { load, finish, reset, attach, audioContext, mood };
+  window.aiScore = { load, finish, reset, mood, useFeed, feed };
 })();

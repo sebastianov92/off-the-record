@@ -119,3 +119,19 @@ class TestMusicBrainzIdentity:
         known = store.resolve_artist("Gloria Estefan", musicbrainz_id="mb-2")
         store.merge_artists(known, typed)
         assert store.resolve_artist("Anything", musicbrainz_id="mb-2") == typed
+
+
+class TestFindSong:
+    def test_found_whatever_the_spelling(self, store):
+        song = song_ids(store)[0]
+        store.update_song(song, title="Frente a Frente", year=None, genre=None, status="matched")
+        store.set_song_artists(song, [store.resolve_artist("Jeanette")], [])
+
+        assert store.find_song("JEANETTE", "frente a frente") == "/songs/song1.m4a"
+
+    def test_another_artists_song_of_the_same_name_is_not_it(self, store):
+        song = song_ids(store)[0]
+        store.update_song(song, title="Frente a Frente", year=None, genre=None, status="matched")
+        store.set_song_artists(song, [store.resolve_artist("Jeanette")], [])
+
+        assert store.find_song("Bunbury", "Frente a Frente") is None

@@ -9,6 +9,14 @@
 			base: window.pikaraokeConfig.basePath,
 			labels: {
 				all: {{ _('All')|tojson }},
+				{# MSG: Button in the song editor that deletes the song from the library. #}
+				delete: {{ _('Delete')|tojson }},
+				{# MSG: Shown on the delete button after a first tap, asking for a second tap. #}
+				deleteConfirm: {{ _('Delete?')|tojson }},
+				{# MSG: Notification after a song was deleted from the library; followed by its title. #}
+				deleted: {{ _('Deleted')|tojson }},
+				{# MSG: Notification when deleting a song from the library failed. #}
+				deleteFailed: {{ _('The song could not be deleted.')|tojson }},
 				byTitle: {{ _('Title A-Z')|tojson }},
 				byArtist: {{ _('Artist A-Z')|tojson }},
 				recent: {{ _('Recently added')|tojson }},
@@ -140,6 +148,8 @@
 		<footer class="modal-card-foot buttons">
 			<button id="meta-save" class="button is-primary">{% trans %}Save{% endtrans %}</button>
 			<button class="button meta-close">{% trans %}Cancel{% endtrans %}</button>
+			{# Pushed to the far end, away from Save. #}
+			<button id="meta-delete" class="button is-danger is-outlined ml-auto">{% trans %}Delete{% endtrans %}</button>
 		</footer>
 	</div>
 </div>

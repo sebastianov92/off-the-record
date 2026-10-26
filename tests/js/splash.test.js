@@ -332,6 +332,27 @@ describe("handleNowPlayingUpdate", () => {
     expect(state().currentVideoUrl).toBe("http://stream/one");
   });
 
+  it("plays the LG TV app's own copy of the song instead of the stream", () => {
+    window.tvSongCopy = () => "http://127.0.0.1:47831/files/a.m4a";
+    try {
+      splash.handleNowPlayingUpdate({ ...base, now_playing_url: "http://stream/one.m3u8", playback_id: "PB1" });
+      // A plain file, not a playlist: no hls.js.
+      expect(document.getElementById("video-source").getAttribute("src")).toBe(
+        "http://127.0.0.1:47831/files/a.m4a",
+      );
+      expect(state().currentVideoUrl).toBe("http://stream/one.m3u8");
+    } finally {
+      delete window.tvSongCopy;
+    }
+  });
+
+  it("drops the src an HLS song left before playing a plain file", () => {
+    video.setAttribute("src", "blob:left-by-hls");
+    splash.handleNowPlayingUpdate({ ...base, now_playing_url: "http://stream/two.mp4", playback_id: "PB2" });
+    expect(video.hasAttribute("src")).toBe(false);
+    expect(document.getElementById("video-source").getAttribute("src")).toBe("http://stream/two.mp4");
+  });
+
   it("seeks a mid-song load to the reported position once metadata is in", () => {
     splash.handleNowPlayingUpdate({
       ...base,

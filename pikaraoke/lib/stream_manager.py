@@ -186,6 +186,24 @@ class StreamManager:
             logging.error(error_message)
             return PlaybackResult(success=False, error=error_message)
 
+    def direct_source(self, file_path: str, semitones: int = 0) -> str | None:
+        """The file a screen may play as it is in place of this song's stream.
+
+        Only when the stream would carry nothing else: no key change, loudness or
+        sync adjustment, and a format the screen plays. For a processed song that is
+        its instrumental. The webOS app keeps copies of these for the next songs.
+        """
+        if (
+            semitones
+            or self.preferences.get_or_default("normalize_audio")
+            or self.preferences.get_or_default("avsync") != 0
+        ):
+            return None
+        override = self.audio_source(file_path)
+        if override:
+            return override
+        return None if is_transcoding_required(file_path) else file_path
+
     def _copy_file(self, src_path: str, dest_path: str) -> bool:
         """Copy a file that doesn't need transcoding.
 
