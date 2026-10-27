@@ -13,7 +13,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from urllib.parse import quote, urlsplit
+from urllib.parse import quote
 
 import flask_babel
 from flask import Flask, request, session
@@ -33,6 +33,7 @@ from pikaraoke.lib.ffmpeg import is_ffmpeg_installed
 from pikaraoke.lib.file_resolver import delete_tmp_dir
 from pikaraoke.lib.get_platform import get_platform, has_js_runtime, is_windows
 from pikaraoke.lib.login_throttle import LoginThrottle
+from pikaraoke.lib.socket_origins import socket_origin_check
 from pikaraoke.lib.song_manager import SongManager
 from pikaraoke.lib.url_prefix import BasePathMiddleware
 from pikaraoke.lib.youtube_dl import upgrade_youtubedl
@@ -45,20 +46,10 @@ from gevent.pywsgi import WSGIServer
 
 args = parse_pikaraoke_args()
 socketio_path = f"{args.base_path}/socket.io" if args.base_path else "/socket.io"
-# Setting cors_allowed_origins REPLACES engineio's same-origin default, so --url alone
-# locks out the kiosk browser on loopback ("is not an accepted origin"). Origin headers
-# never carry a path, hence the normalise.
-cors_allowed_origins = None
-if args.url:
-    split_url = urlsplit(args.url)
-    cors_allowed_origins = [
-        f"{split_url.scheme}://{split_url.netloc}",
-        f"http://localhost:{args.port}",
-        f"http://127.0.0.1:{args.port}",
-        f"http://[::1]:{args.port}",
-    ]
 socketio = SocketIO(
-    async_mode="gevent", cors_allowed_origins=cors_allowed_origins, path=socketio_path
+    async_mode="gevent",
+    cors_allowed_origins=socket_origin_check(args.url, args.port),
+    path=socketio_path,
 )
 babel = Babel()
 

@@ -74,3 +74,14 @@ def test_an_unknown_format_is_refused(tmp_path):
 
     run.assert_not_called()
     assert response.status_code == 400
+
+
+def test_the_guide_is_served_as_audio_whatever_the_host_knows(tmp_path):
+    """Without a type, Safari will not play it: a slim image has no mime.types."""
+    (tmp_path / "vocals.m4a").write_bytes(b"vocals")
+    client = make_route_app(ai_bp, []).test_client()
+
+    with patch("pikaraoke.ai.routes.ai_dir", return_value=str(tmp_path)):
+        response = client.get("/ai/guide/1?semitones=0")
+
+    assert response.mimetype == "audio/mp4"
