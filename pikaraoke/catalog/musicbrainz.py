@@ -16,7 +16,7 @@ from pikaraoke.catalog.artists import fold
 
 API = "https://musicbrainz.org/ws/2"
 COVERS = "https://coverartarchive.org/release"
-USER_AGENT = f"PiKaraoke-Dezik/{VERSION} ( https://github.com/sebastianov92/pikaraoke )"
+USER_AGENT = f"OffTheRecord/{VERSION} ( https://github.com/sebastianov92/off-the-record )"
 TIMEOUT = 10
 MIN_INTERVAL = 1.1  # seconds between requests
 MIN_SCORE = 85  # MusicBrainz's own 0-100 search score

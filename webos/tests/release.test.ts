@@ -8,7 +8,7 @@ describe('release manifest', () => {
   const appinfo = { id: 'com.dezik.offtherecord', version: '0.1.0', type: 'web', title: 'Off the Record' };
   const manifest = releaseManifest({
     appinfo,
-    repository: 'sebastianov92/pikaraoke',
+    repository: 'sebastianov92/off-the-record',
     ipkName: 'com.dezik.offtherecord_0.1.0_all.ipk',
     ipkBytes: Buffer.from('ipk'),
   });
@@ -16,7 +16,7 @@ describe('release manifest', () => {
   it('points at the versioned release for the package', () => {
     assert.equal(
       manifest.ipkUrl,
-      'https://github.com/sebastianov92/pikaraoke/releases/download/webos-v0.1.0/com.dezik.offtherecord_0.1.0_all.ipk',
+      'https://github.com/sebastianov92/off-the-record/releases/download/webos-v0.1.0/com.dezik.offtherecord_0.1.0_all.ipk',
     );
   });
 

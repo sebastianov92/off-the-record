@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 
 const root = path.resolve(import.meta.dirname, '..');
 const manifest = JSON.parse(await fs.readFile(path.join(root, 'appinfo.json'), 'utf8'));
-const repository = process.env.GITHUB_REPOSITORY || 'sebastianov92/pikaraoke';
+const repository = process.env.GITHUB_REPOSITORY || 'sebastianov92/off-the-record';
 const tag = `webos-v${manifest.version}`;
 if (process.env.RELEASE_TAG && process.env.RELEASE_TAG !== tag)
   throw new Error(`RELEASE_TAG ${process.env.RELEASE_TAG} does not match ${tag}.`);

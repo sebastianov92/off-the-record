@@ -13,7 +13,7 @@ import requests
 from pikaraoke import VERSION
 
 API = "https://lrclib.net/api"
-USER_AGENT = f"PiKaraoke-Dezik/{VERSION} (https://github.com/sebastianov92/pikaraoke)"
+USER_AGENT = f"OffTheRecord/{VERSION} (https://github.com/sebastianov92/off-the-record)"
 TIMEOUT = 10
 # A version more than this many seconds off the song is another cut (radio edit, live).
 MAX_DURATION_GAP = 5.0
